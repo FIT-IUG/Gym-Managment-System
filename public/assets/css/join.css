@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Mulish:wght@200;300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap');
+
+:root {
+  --yallow:#E1E002;
+  --dark: #181818;
+  --blackk: #252525;
+  --dark-light: #2C2C2C;
+  --headerHieght: 10vh;
+}
+
+body {
+  font-family: 'Roboto', sans-serif ;
+  background: var(--dark-light);
+}
+.min-vh-90{
+  min-height: 89vh !important;
+}
+.w-1{
+  width: 15%;
+}
+.f11{
+  font-size: 12px ;
+}
+.f12{
+  font-size: 14px !important;
+}
+.f50{
+  font-size: 70px ;
+}
+.fs-25{
+  font-size: 20px;
+}
+.fs-16{
+  font-size: 14px;
+}
+.fs-32{
+  font-size: 27px;
+}
+.bg-primary-op {
+  background-color:  #212121a2 !important;
+}
+.bg-primary {
+  background-color: var(--dark-light) !important;
+}
+.bg-secondary{
+  background-color: var(--dark) !important;
+}
+.bg-secondary-op{
+  background-color: #181818a7 !important;
+}
+.bg-warning{
+  background-color: var(--yallow) !important;
+}
+.bggg{
+  background-color:  #555555;
+
+}
+.min-vh-10 {
+  min-height: var(--headerHieght) !important;
+}
+.text-warning {
+  color: var(--yallow) !important;
+}
+.border-warning{
+  border: 1px solid #e1e10252 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+}
+.btn-primary{
+  background-color: var(--yallow) !important;
+  border: 1px solid var(--yallow) !important;
+  color: var(--blackk) !important;
+}
+.btn-primary:hover{
+  background-color: transparent !important;
+  border: 1px solid white !important;
+  color: white !important;
+}
+.btn-secondary{
+  background-color: transparent !important;
+  border: 1px solid white !important;
+  color: white !important;
+}
+.btn-secondary:hover{
+  background-color: var(--yallow) !important;
+  border: 1px solid var(--yallow) !important;
+  color: var(--blackk) !important;
+}
+/* main */
+main{
+  min-height: 100vh;
+  background-image: url(../img/join.svg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center ;
+}
+
+.WWW{
+  width: 1000px;
+}

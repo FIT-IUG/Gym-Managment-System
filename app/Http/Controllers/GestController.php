@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
+use App\Models\BuyPackage;
 use App\Models\Coach;
 use App\Models\Package;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class GestController extends Controller
@@ -13,7 +16,7 @@ class GestController extends Controller
     //
     public function home()
     {
-//        $coaches = Coach::all();
+        //        $coaches = Coach::all();
         $coaches = Coach::where('gender', 'male')->get();
         $services = Package::all();
         $blogs = Blog::all();
@@ -35,10 +38,6 @@ class GestController extends Controller
     public function showService($id)
     {
         $service = Package::find($id);
-//        $service = Package::where('id', $id)->get();
-//        foreach ($service as $service) {
-//            $service->description = Str::limit($service->description, 110);
-//        }
         return view('gest.showService', ['service' => $service]);
     }
 
@@ -70,5 +69,29 @@ class GestController extends Controller
     public function signupView()
     {
         return view('gest.joinUs');
+    }
+    public function myCoach()
+    {
+        $user = Auth::user();
+        $attendance = User::with('attendances.trainingSessions')->find($user->id);
+        $sessions = $attendance->attendances->pluck('trainingSessions');
+        $coaches = collect();
+
+        foreach ($sessions as $session) {
+            $coaches = $coaches->merge($session->coaches);
+        }
+        return view('gest.auth.clinteCoach', ['coaches' => $coaches]);
+    }
+    public function session()
+    {
+        $user = Auth::user();
+        $attendance = User::with('attendances.trainingSessions')->find($user->id);
+        $sessions = $attendance->attendances->pluck('trainingSessions');
+        return view('gest.auth.sessions', ['sessions' => $sessions,]);
+    }
+    public function parchedPackage()
+    {
+        $boughtPackageCollection = BuyPackage::where('user_id', auth()->user()->id)->get();
+        return view('gest.auth.parchedPackage', ['boughtPackageCollection' => $boughtPackageCollection,]);
     }
 }

@@ -26,26 +26,6 @@ class UserController extends Controller
 
     public function index()
     {
-//        $roleAdmin = auth()->user()->hasRole('admin');
-//        $roleAdmin = auth()->user()->gender;
-//
-//        if ($roleAdmin) {
-//            $users = User::role('client')->get();
-//        }
-//        $isAdmin = auth()->user()->hasRole('admin');
-//        $gender = auth()->user()->gender;
-//
-//        if ($isAdmin) {
-//            // Check the gender of the admin and filter users accordingly
-//            if ($gender === 'male') {
-//                $users = User::role('client')->where('gender', 'male')->get();
-//            } elseif ($gender === 'female') {
-//                $users = User::role('client')->where('gender', 'female')->get();
-//            }
-//        } else {
-//            // Non-admin users will see all clients
-//            $users = User::role('client')->get();
-//        }
         $isWeb = auth()->guard('web')->check();
         if ($isWeb) {
             $roleAdmin = auth()->user()->hasRole('admin');
@@ -57,33 +37,19 @@ class UserController extends Controller
                     $users = User::role('client')->where('gender', 'female')->get();
                 }
             } else {
-//           // Non-admin users will see all clients
                 $users = User::role('client')->get();
             }
-
         } else {
             $isCoach = auth()->guard('coach')->check();
             $roleCoach = auth('coach')->user()->hasRole('coach');
             $gender = auth('coach')->user()->gender;
             if ($roleCoach) {
-//                $coachId = auth('coach')->user()->id;
-//                $coach = Coach::find($coachId);
                 $coach = auth('coach')->user();
                 $trainingSessions = $coach->trainingSessions;
-//                dd($trainingSessions);
                 $attendances = Attendance::whereIn('training_session_id', $trainingSessions->pluck('id'))->get();
-//                dd($attendances);
                 $usersInSessions = $attendances->filter(function ($attendance) use ($gender) {
                     return $attendance->users->gender === $gender;
                 })->pluck('users')->unique();
-//                dd($usersInSessions);
-//                if ($gender === 'male') {
-////                    $users = array_merge($maleUsers, $maleAttendances->pluck('user')->toArray());
-////                    $users = User::role('client')->where('gender', 'male')->get();
-//                } elseif ($gender === 'female') {
-////                    $users = array_merge($femaleUsers, $femaleAttendances->pluck('user')->toArray());
-////                    $users = User::role('client')->where('gender', 'female')->get();
-//                }
                 $users = $usersInSessions;
             }
             return view('users.index', data: [
@@ -207,7 +173,7 @@ class UserController extends Controller
 
     public function updateProfile(Request $request)
     {
-//        dd($request);
+        //        dd($request);
         $userID = $request->id;
 
         $validated = $request->validate([
@@ -217,7 +183,7 @@ class UserController extends Controller
         ]);
 
         $oldimg = $request->oldimg;
-//        dd($request);
+        //        dd($request);
 
         if ($request->hasFile('profile_img')) {
             $request->validate([
@@ -226,7 +192,7 @@ class UserController extends Controller
 
             $imageName = time() . '.' . $request->file('profile_img')->extension();
             $request->file('profile_img')->move(public_path('imgs//' . 'users'), $imageName);
-//            dd($imageName);
+            //            dd($imageName);
             DB::table('users')->where('id', '=', $userID)->update(['profile_img' => $imageName]);
 
             if ($oldimg != "Client.png") {
@@ -241,7 +207,7 @@ class UserController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'date_of_birth' => $validated['date_of_birth'],
-//            'profile_img' => $imageName
+            //            'profile_img' => $imageName
         ]);
         return redirect()->route('dashboard');
     }
@@ -255,7 +221,7 @@ class UserController extends Controller
     public function updatePassword(Request $request)
     {
         $userid = Auth::id();
-//        dd($userid);
+        //        dd($userid);
 
         $data = $request->validate([
             'newpassword' => 'required|min:6',

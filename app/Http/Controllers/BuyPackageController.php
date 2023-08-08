@@ -3,11 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
-use App\Models\City;
 use App\Models\BuyPackage;
-use App\Models\CityManager;
-use App\Models\Gym;
-use App\Models\GymManager;
 use App\Models\Package;
 use App\Models\Stripe;
 use App\Models\TrainingSession;
@@ -64,13 +60,12 @@ class BuyPackageController extends Controller
         $roleClient = Auth::user()->hasRole('client');
 
         $loggedInUser = Auth::user();
-//        $user = User::role('cityManager')->get()->where('id', $loggedInUser->id)->where('city_id', $loggedInUser->city_id);
         $gender = auth()->user()->gender;
         if ($roleAdmin) {
             if ($gender === 'male') {
-                $users = User::role('client')->where('gender', 'male')->get();
+                $users = User::role('client')->where('gender', 'male')->whereNull('banned_at')->get();
             } elseif ($gender === 'female') {
-                $users = User::role('client')->where('gender', 'female')->get();
+                $users = User::role('client')->where('gender', 'female')->whereNull('banned_at')->get();
             }
             return view('payment.create', data: [
                 'packages' => $packages,
@@ -83,20 +78,16 @@ class BuyPackageController extends Controller
                 'users' => $user_id,
             ]);
         }
-
         return view('payment.create', data: [
-//            'cities' => $city_id,
             'packages' => $packages,
-            'users' => $users,
-//            'gyms' => $gym_id,
+            'users' => $users
         ]);
     }
 
 
     public function store(Request $requestObj)
     {
-//        dd($requestObj);
-//        $paymentData = Stripe::first();
+        //        dd($requestObj);
 
         $package = DB::table('training_packages')->where('id', $requestObj->package_id)->first();
         dd($package->training_session_id);
@@ -118,9 +109,7 @@ class BuyPackageController extends Controller
         $trainingSession->attendances()->save($attendance);
 
         $attendance->save();
-        DB::table('stripe')->delete();
 
         return to_route('buyPackage.index');
     }
-
 }

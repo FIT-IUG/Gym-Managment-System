@@ -29,6 +29,7 @@ use App\Http\Controllers\TrainingSessionController;
 Route::prefix('')->middleware('auth:web,coach')->group(function () {
     Route::GET('/', [HomeController::class, 'index'])->name('dashboard');
 });
+// Route::get('/', [GestController::class, 'home'])->name('home');
 
 Route::get('/home', [GestController::class, 'home'])->name('home');
 Route::get('/service', [GestController::class, 'service'])->name('service');
@@ -40,6 +41,9 @@ Route::get('/signin', [GestController::class, 'signinView'])->name('signIn');
 Route::get('/signup', [GestController::class, 'signupView'])->name('signUp');
 Route::group(['middleware' => 'auth', 'middleware' => 'role:client'], function () {
     Route::get('/profile', [HomeController::class, 'profile'])->name('profile');
+    Route::get('/myCoach', [GestController::class, 'myCoach'])->name('clintCoach');
+    Route::get('/clintSession', [GestController::class, 'session'])->name('clintSession');
+    Route::get('/parchedPackage', [GestController::class, 'parchedPackage'])->name('parchedPackage');
 });
 
 

@@ -2,14 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GymManager;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreGymManagerRequest;
-use App\Http\Requests\UpdateGymManagerRequest;
 use App\Models\BuyPackage;
-use App\Models\City;
-use App\Models\CityManager;
-use App\Models\Gym;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -26,11 +20,10 @@ class RevenueController extends Controller
 
         if ($isAdmin) {
             if ($gender === 'male') {
-//                $boughtPackages = BuyPackage::all();
+                //                $boughtPackages = BuyPackage::all();
                 $boughtPackages = BuyPackage::whereHas('user', function ($query) {
                     $query->where('gender', 'male');
                 })->paginate(10);
-
             } elseif ($gender === 'female') {
                 $boughtPackages = BuyPackage::whereHas('user', function ($query) {
                     $query->where('gender', 'female');

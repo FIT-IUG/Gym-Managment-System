@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Gym;
-use App\Models\City;
 use App\Models\User;
 use App\Models\Attendance;
 use Nette\Utils\Paginator;

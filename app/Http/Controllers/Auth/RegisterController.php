@@ -58,9 +58,8 @@ class RegisterController extends Controller
             'userImg' => 'image|mimes:jpg,jpeg',
             'date_of_birth' => 'required|date',
             'description' => 'required|string',
-            'gender' =>'required|in:male,female',
+            'gender' => 'required|in:male,female',
         ]);
-
     }
 
     /**
@@ -71,9 +70,9 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        if (array_key_exists("userImg",$data)):
+        if (array_key_exists("userImg", $data)) :
             $img = $data['userImg'];
-        else:
+        else :
             $img = null;
         endif;
 
@@ -81,32 +80,35 @@ class RegisterController extends Controller
             $imageName = time() . rand(1, 200) . '.' . $img->extension();
             $img->move(public_path('imgs//' . 'users'), $imageName);
         else :
-            $imageName = 'Client.Png';
+            $imageName = 'Client.png';
         endif;
 
-//        $user=User::create([
-//            'name' => $data['name'],
-//            'email' => $data['email'],
-//            'password' => Hash::make($data['123456789']),
-//            'profile_img' => $imageName,
-//            'date_of_birth' =>$data['date_of_birth'],
-//            'gender' => $data['gender'],
-//            'description'=> $data['description'],
-//        ]);
+        //        $user=User::create([
+        //            'name' => $data['name'],
+        //            'email' => $data['email'],
+        //            'password' => Hash::make($data['123456789']),
+        //            'profile_img' => $imageName,
+        //            'date_of_birth' =>$data['date_of_birth'],
+        //            'gender' => $data['gender'],
+        //            'description'=> $data['description'],
+        //        ]);
         $user = new User([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'profile_img' => $imageName,
-            'date_of_birth' =>$data['date_of_birth'],
+            'date_of_birth' => $data['date_of_birth'],
             'gender' => $data['gender'],
-            'description'=> $data['description'],
+            'description' => $data['description'],
         ]);
-//        save user when the admin is approving it
+        //        save user when the admin is approving it
         $user->save();
+        $user->ban([
+            'comment' => 'its new resister user',
+        ]);
 
         $user->assignRole('client');
-        return $user;
+        return redirect()->route('dashboard');;
     }
 
 
@@ -139,7 +141,4 @@ class RegisterController extends Controller
         // Show the approved user
         return view('users.index', compact('user'));
     }
-
 }
-
-

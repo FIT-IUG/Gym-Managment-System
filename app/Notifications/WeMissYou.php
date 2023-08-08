@@ -42,10 +42,10 @@ class WeMissYou extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->greeting('Hello, '.$this->user->name)
-                    ->line('please come back soon we missed you here')
-                    ->line('come soon please....')
-                    ->salutation('Best Regards , Your Gym');
+            ->greeting('مرحبًا, ' . $this->user->name)
+            ->line('لقد افتقدناك هنا')
+            ->line('تعال قريبا من فضلك ....')
+            ->salutation('مع أطيب التحيات ، نادي سوبر جيم');
     }
 
     /**

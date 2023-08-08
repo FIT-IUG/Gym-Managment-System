@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Users')
+@section('title', 'المستخدمون')
 
 
 @section('content')
@@ -19,16 +19,18 @@
                                 @method('put')
 
                                 <div class="form-group">
-                                    <label for="">New Password</label>
-                                    <input type="password" class="form-control" name="newpassword" placeholder="Enter your new password">
+                                    <label for="">كلمة المرور الجديدة</label>
+                                    <input type="password" class="form-control" name="newpassword"
+                                        placeholder="أدخل كلمة المرور الجديدة">
                                 </div>
                                 @error('newpassword')
                                     <div class="alert alert-danger p-1">{{ $message }}</div>
                                 @enderror
 
                                 <div class="form-group">
-                                    <label for="">Old Password</label>
-                                    <input type="password" class="form-control" name="oldpassword" placeholder="Enter your Old password">
+                                    <label for="">كلمة المرور القديمة</label>
+                                    <input type="password" class="form-control" name="oldpassword"
+                                        placeholder="أدخل كلمة المرور القديمة الخاصة بك">
                                 </div>
                                 @error('oldpassword')
                                     <div class="alert alert-danger">{{ $message }}</div>
@@ -40,7 +42,7 @@
 
 
                                 <div class="d-flex justify-content-end mt-4">
-                                    <button type="submit" class="btn btn-success py-2 px-4">Update</button>
+                                    <button type="submit" class="btn btn-success py-2 px-4">تحديث</button>
                                 </div>
 
                             </form> <!-- /.card -->

@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Users')
+@section('title', 'المدربون')
 
 
 @section('content')
@@ -14,27 +14,26 @@
                     <div class="card card-primary card-outline">
                         <div class="card-body box-profile">
 
-                            <form class="mt-5 w-50 mx-auto" action="{{ route('profile.updateCoachPassword') }}"
-                                  method="post">
+                            <form class="mt-5 w-50 mx-auto" action="{{ route('profile.updateCoachPassword') }}" method="post">
                                 @csrf
                                 @method('put')
 
                                 <div class="form-group">
-                                    <label for="">New Password</label>
+                                    <label for="">كلمة المرور الجديدة</label>
                                     <input type="password" class="form-control" name="newpassword"
-                                           placeholder="Enter your new password">
+                                        placeholder="أدخل كلمة المرور الجديدة">
                                 </div>
                                 @error('newpassword')
-                                <div class="alert alert-danger p-1">{{ $message }}</div>
+                                    <div class="alert alert-danger p-1">{{ $message }}</div>
                                 @enderror
 
                                 <div class="form-group">
-                                    <label for="">Old Password</label>
+                                    <label for="">كلمة المرور القديمة</label>
                                     <input type="password" class="form-control" name="oldpassword"
-                                           placeholder="Enter your Old password">
+                                        placeholder="أدخل كلمة المرور القديمة الخاصة بك">
                                 </div>
                                 @error('oldpassword')
-                                <div class="alert alert-danger">{{ $message }}</div>
+                                    <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
                                 @if ($msg != 0)
                                     <div class="alert alert-danger">{{ $msg }}</div>
@@ -42,7 +41,7 @@
 
 
                                 <div class="d-flex justify-content-end mt-4">
-                                    <button type="submit" class="btn btn-success py-2 px-4">Update</button>
+                                    <button type="submit" class="btn btn-success py-2 px-4">تحديث</button>
                                 </div>
 
                             </form> <!-- /.card -->

@@ -3,9 +3,6 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
-
-use App\Models\Gym;
-use App\Models\City;
 use App\Models\User;
 use App\Models\Coach;
 use Spatie\Period\Period;

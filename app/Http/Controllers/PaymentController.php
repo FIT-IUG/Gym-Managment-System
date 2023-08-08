@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\BuyPackage;
-use App\Models\Gym;
 use App\Models\Package;
-use App\Models\Stripe;
 use App\Models\TrainingSession;
 use App\Models\User;
 use Carbon\Carbon;
@@ -17,25 +15,6 @@ use Illuminate\Support\Facades\Redirect;
 
 class PaymentController extends Controller
 {
-    public function stripe(Request $request)
-    {
-        header('Content-Type: application/json');
-
-        $YOUR_DOMAIN = 'http://127.0.0.1:8000/buyPackage/create';
-
-        $checkout_session = \Stripe\Checkout\Session::create([
-            'source' => $request->stripeToken,
-            'mode' => 'payment',
-            'success_url' => $YOUR_DOMAIN . '/success',
-            'cancel_url' => $YOUR_DOMAIN . '/cancel',
-        ]);
-
-
-        header("HTTP/1.1 303 See Other");
-
-        return redirect($checkout_session->url);
-    }
-
     public function store(Request $requestObj)
     {
 //        dd($requestObj);

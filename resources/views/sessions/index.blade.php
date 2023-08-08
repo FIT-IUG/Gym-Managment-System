@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title', 'Sessions')
+@section('title', 'الحصص التدريبية')
 
 
 @section('content')
@@ -10,25 +10,25 @@
                 <div class="alert alert-danger">{{ $message }}</div>
             @enderror
             <div class="d-flex justify-content-center mb-3">
-                @role('gymManager|admin|cityManager')
-                    <a href="{{ route('sessions.create') }}" class="btn btn-success my-3">Create session</a>
+                @role('admin')
+                    <a href="{{ route('sessions.create') }}" class="btn btn-success my-3">إنشاء حصة تدربية</a>
                 @endrole
             </div>
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">All Sessions</h3>
+                    <h3 class="card-title">جميع الحصص التدريبية</h3>
                 </div>
                 <div class="card-body">
                     <table id="table" class="table text-center table-hover">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Day</th>
-                                <th>Coach</th>
-                                <th>Start at</th>
-                                <th>Finish at</th>
-                                @role('gymManager|admin|cityManager')
-                                    <th>Actions</th>
+                                <th>الاسم</th>
+                                <th>اليوم</th>
+                                <th>المدرب</th>
+                                <th>تبدأ في</th>
+                                <th>ينتهي عند</th>
+                                @role('admin')
+                                    <th>أجراءات</th>
                                 @endrole
                             </tr>
                         </thead>
@@ -44,11 +44,11 @@
                                             @endforeach
                                         </ul>
                                     </td>
-                                    <td>{{ date("Y-m-d h:i a",strtotime($session->started_at)) }}</td>
-                                    <td>{{ date("Y-m-d h:i a",strtotime($session->finished_at)) }}</td>
+                                    <td>{{ date('Y-m-d h:i a', strtotime($session->started_at)) }}</td>
+                                    <td>{{ date('Y-m-d h:i a', strtotime($session->finished_at)) }}</td>
 
 
-                                    @role('gymManager|admin|cityManager')
+                                    @role('admin')
                                         <td class="d-flex justify-content-center">
 
                                             <a href="{{ route('sessions.show', $session->id) }}"

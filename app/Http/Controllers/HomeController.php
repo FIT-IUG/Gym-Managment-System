@@ -13,7 +13,6 @@ use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use App\Models\User;
-use App\Models\GymManager;
 use App\Models\Package;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Support\Facades\DB;
@@ -37,16 +36,16 @@ class HomeController extends Controller
      */
     public function index()
     {
-//        dd(auth()->user());
+        //        dd(auth()->user());
         $packages = Package::all();
         $isCoach = auth()->guard('coach')->check();
-//        dd(auth()->user()->Role('admin'));
+        //        dd(auth()->user()->Role('admin'));
         $isAdmin = auth()->user()->hasRole('admin');
-//        $isCoach = auth('coach')->user()->hasRole('coach');
-//        $isGymManager = auth()->user()->hasRole('gymManager');
+        //        $isCoach = auth('coach')->user()->hasRole('coach');
+        //        $isGymManager = auth()->user()->hasRole('gymManager');
         $isClient = auth()->user()->hasRole('client');
 
-        if (!$isClient && !$isCoach) {
+        if (!$isClient) {
             if ($isAdmin) {
                 $boughtPackages = BuyPackage::all();
                 $boughtPackagesCount = count($boughtPackages);
@@ -65,11 +64,11 @@ class HomeController extends Controller
             ]);
         } elseif ($isCoach) {
             return view('dashboard', data: [
-//                'packages' => $packages,
-//                'boughtPackages' => $boughtPackages,
-//                'boughtPackagesCount' => $boughtPackagesCount,
-//                'allClientsCount' => $allClientsCount,
-//                'paidPrice' => $paidPrice,
+                //                'packages' => $packages,
+                //                'boughtPackages' => $boughtPackages,
+                //                'boughtPackagesCount' => $boughtPackagesCount,
+                //                'allClientsCount' => $allClientsCount,
+                //                'paidPrice' => $paidPrice,
             ]);
         } else {
             $attendances = Attendance::where('user_id', auth()->user()->id)->get();
@@ -80,7 +79,7 @@ class HomeController extends Controller
             foreach ($services as $service) {
                 $service->description = Str::limit($service->description, 99);
             }
-            return view('dashboard', data: [
+            return view('gest.home', data: [
                 'boughtPackages' => $boughtPackages,
                 'attendances' => $attendances,
                 'services' => $services,
@@ -92,24 +91,24 @@ class HomeController extends Controller
 
     public function indexCoach()
     {
-//        dd(auth()->user());
-//        $packages = Package::all();
+        //        dd(auth()->user());
+        //        $packages = Package::all();
         $isCoach = auth()->guard('coach')->check();
-//        dd(auth()->user()->Role('admin'));
+        //        dd(auth()->user()->Role('admin'));
         $isCoach = auth('coach')->user()->hasRole('coach');
 
         if ($isCoach) {
             $coachId = auth('coach')->user()->id;
             $coach = Coach::find($coachId);
             $trainingSessions = $coach->trainingSessions;
-//            dd($trainingSessions);
-//                $sessions = Coach::with('trainingSessions')->where('id', auth()->user()->id)->get();
+            //            dd($trainingSessions);
+            //                $sessions = Coach::with('trainingSessions')->where('id', auth()->user()->id)->get();
             return view('dashboard', data: [
                 'trainingSessions' => $trainingSessions,
-//                'boughtPackages' => $boughtPackages,
-//                'boughtPackagesCount' => $boughtPackagesCount,
-//                'allClientsCount' => $allClientsCount,
-//                'paidPrice' => $paidPrice,
+                //                'boughtPackages' => $boughtPackages,
+                //                'boughtPackagesCount' => $boughtPackagesCount,
+                //                'allClientsCount' => $allClientsCount,
+                //                'paidPrice' => $paidPrice,
             ]);
         } else {
             $attendances = Attendance::where('user_id', auth()->user()->id)->get();

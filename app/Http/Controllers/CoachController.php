@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CoachRequest;
-use App\Models\Gym;
-use App\Models\City;
 use App\Models\Coach;
 use App\Models\CoachSession;
 use App\Models\User;

@@ -6,7 +6,7 @@
     <div class="container-fluid">
         <div class="px-4">
             @error('msg')
-                <div class="alert alert-danger">{{ $message }}</div>
+            <div class="alert alert-danger">{{ $message }}</div>
             @enderror
             <div class="card">
                 <div class="card-header">
@@ -15,13 +15,14 @@
                 <div class="card-body">
                     <table id="table" class="table text-center table-hover">
                         <thead>
-                            <tr>
-                                <th>الاسم</th>
-                                <th>البريد الإلكتروني</th>
-                                <th>صورة الملف الشخصي</th>
-                                <th>تاريخ الحظر</th>
-                                <th>إلغاء الحظر</th>
-                            </tr>
+                        <tr>
+                            <th>الاسم</th>
+                            <th>البريد الإلكتروني</th>
+                            <th>صورة الملف الشخصي</th>
+                            <th>تاريخ الحظر</th>
+                            <th>سبب الحظر</th>
+                            <th>إلغاء الحظر</th>
+                        </tr>
                         </thead>
 
                         @foreach ($bannedUsers as $user)
@@ -29,11 +30,21 @@
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
                                 <td><img src="{{ url('imgs/users/' . $user->profile_img) }} " width="50px" height="50px"
-                                        alt="not found" /></td>
+                                         alt="not found"/></td>
                                 <td>{{ $user->banned_at }}</td>
+                                @php
+                                    $user = \App\Models\User::find($user->id);
+                                    if (!$user) {
+                                        return 'No User Found';
+                                    }
+                                    $banRecord = $user->bans->where('bannable_type', \App\Models\User::class)->first();
+                                @endphp
+                                <td>
+                                    {{ $banRecord ? $banRecord->comment : 'No Comment' }}
+                                </td>
                                 <td class="d-flex justify-content-center">
                                     <a href="{{ route('users.unban', $user->id) }}" class="btn btn-md btn-light"
-                                        title="إلغاء الحظر"><i class="fas fa-user-slash"></i></a>
+                                       title="إلغاء الحظر"><i class="fas fa-user-slash"></i></a>
                                 </td>
                             </tr>
                         @endforeach
@@ -46,7 +57,7 @@
 
 @section('script')
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             $('#table').DataTable();
         });
     </script>

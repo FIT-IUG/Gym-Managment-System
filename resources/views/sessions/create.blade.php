@@ -31,28 +31,28 @@
                     <!-- Choose Day -->
                     <div class="form-group mb-3">
                         <label class="form-label">اليوم</label>
-                        <select name="day" class="form-control">
+                        <select name="day[]" class="form-control" multiple>
                             <option value="0" disabled selected>=== حدد اليوم ===</option>
-                            <option value="Saturday">السبت</option>
-                            <option value="Sunday">الأحد</option>
-                            <option value="Monday">الاثنين</option>
-                            <option value="Tuesday">الثلاثاء</option>
-                            <option value="Wednesday">الأربعاء</option>
-                            <option value="Thursday">الخميس</option>
-                            <option value="Friday">الجمعة</option>
+                            <option value="السبت">السبت</option>
+                            <option value="الأحد">الأحد</option>
+                            <option value="الاثنين">الاثنين</option>
+                            <option value="الثلاثاء">الثلاثاء</option>
+                            <option value="الأربعاء">الأربعاء</option>
+                            <option value="الخميس">الخميس</option>
+                            <option value="الجمعة">الجمعة</option>
                         </select>
                     </div>
 
                     <!-- Start -->
                     <div class="form-group mb-3">
                         <label>البدء في الحصة التدريبية</label>
-                        <input class="form-control" type="datetime-local" name="started_at">
+                        <input class="form-control" type="time" name="started_at">
                     </div>
 
                     <!-- Finish -->
                     <div class="form-group mb-3">
                         <label>الانتهاء من الحصةالتدريبية</label>
-                        <input class="form-control" type="datetime-local" name="finished_at">
+                        <input class="form-control" type="time" name="finished_at">
                     </div>
 
                     <!-- Coaches -->

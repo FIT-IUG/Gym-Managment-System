@@ -176,6 +176,7 @@
                     @auth('coach')
                         <img src="{{ asset('imgs/coaches/' . auth('coach')->user()->profile_image) }}"
                              class="img-circle elevation-2"
+                             style="height: 50px; width: 50px"
                              alt="Coach Image">
                     @endauth
                 </div>

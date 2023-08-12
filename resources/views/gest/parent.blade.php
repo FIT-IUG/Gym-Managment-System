@@ -107,12 +107,12 @@
                                             <hr class="dropdown-divider">
                                         </li>
                                         <li>
-                                            <a class="dropdown-item f12 text-danger  " href="{{ route('logout') }}"
+                                            <a class="dropdown-item f12 text-danger  " href="{{ route('auth.logout') }}"
                                                 onclick="event.preventDefault();
                         document.getElementById('logout-form').submit();">تسجيل
                                                 خروج </a>
 
-                                            <form id="logout-form" action="{{ route('logout') }}" method="POST"
+                                            <form id="logout-form" action="{{ route('auth.logout') }}" method="POST"
                                                 class="d-none">
                                                 @csrf
                                             </form>

@@ -11,7 +11,7 @@
                 <!-- Profile -->
                 <div class="col-md-8">
                     <!-- Widget: user widget style 1 -->
-                    @role('admin|gymManager')
+                    @role('admin')
                     <div class="card card-widget widget-user">
                         <!-- Add the bg color to the header using any of the bg-* classes -->
                         <div class="widget-user-header text-white"
@@ -46,9 +46,6 @@
                                         @role('admin')
                                         <span class="description-text text-secondary">Owner Of Super Gym Club</span>
                                         @endrole
-                                        {{--                                    @role('cityManager')--}}
-                                        {{--                                    <span class="description-text text-secondary"><b>{{ auth()->user()->city->name }}</b><br> City Manager</span>--}}
-                                        {{--                                    @endrole--}}
                                         @role('coach')
                                         <span class="description-text text-secondary">{{ auth()->user()->name }} <br> Coach</span>
                                         @endrole
@@ -166,7 +163,7 @@
                 </div>
 
                 <!-- 3 Statistics  -->
-                @hasanyrole('admin|cityManager|gymManager')
+                @hasanyrole('admin')
                 <div class="col-md-4">
                     <div class="col-12 col-sm-6 col-md-12">
                         <div class="info-box">

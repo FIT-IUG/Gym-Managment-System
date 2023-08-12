@@ -23,7 +23,7 @@
                     <table id="table" class="table text-center ">
                         <thead>
                             <tr>
-                                <th class="col-2">السم</th>
+                                <th class="col-2">الاسم</th>
                                 <th class="col-2">السعر</th>
                                 <th class="col-2">الصورة</th>
                                 <th class="col-2">أنشئت في</th>

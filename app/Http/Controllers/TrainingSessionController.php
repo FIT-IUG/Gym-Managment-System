@@ -22,15 +22,18 @@ class TrainingSessionController extends Controller
         if ($isWeb) {
             $roleAdmin = auth()->user()->hasRole('admin');
             $roleClient = auth()->user()->hasRole('client');
+            $gender = auth()->user()->gender;
             if ($roleAdmin) {
-                $sessions = TrainingSession::all();
+                $sessions = TrainingSession::whereHas('coaches', function ($query) use ($gender) {
+                    $query->where('gender', $gender);
+                })->get();
                 foreach ($sessions as $session) {
                     $daysFromDatabase = json_decode($session->days);
                     $daysArray = explode(",", $daysFromDatabase); // تقسيم النص إلى مصفوفة
                     $daysToShow = implode(", ", $daysArray);
                     $session->days = $daysToShow;
                 }
-                $coaches = Coach::all();
+                $coaches = Coach::where('gender', $gender)->get();
             } elseif ($roleClient) {
                 $user = Auth::user();
                 $attendance = User::with('attendances.trainingSessions')->find($user->id);
@@ -157,10 +160,8 @@ class TrainingSessionController extends Controller
         $checkSession = CoachSession::where('training_session_id', $id)->first();
         $checkAttendence = Attendance::where('training_session_id', $id)->first();
 
-//        dd($checkAttendence);
         if ($checkAttendence == null) {
 
-//            $session->gyms()->dissociate();
             $session->coaches()->detach();
             $session->delete();
 

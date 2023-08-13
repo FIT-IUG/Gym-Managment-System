@@ -23,13 +23,17 @@
                     @endif
                     <div class="form-group mb-3">
                         <label for="started_at">تبدأ في</label>
-                        <input name="started_at" type="datetime-local" value="{{ $session['started_at'] }}"
-                            class="form-control" id="started_at">
+{{--                        <input name="started_at" type="datetime-local" value="{{ $session['started_at'] }}"--}}
+{{--                               class="form-control" id="started_at">--}}
+                        <input class="form-control" type="time" value="{{ $session['started_at'] }}" name="started_at"
+                               id="started_at">
                     </div>
                     <div class="form-group mb-3">
                         <label for="finished_at">ينتهي عند</label>
-                        <input name="finished_at" type="datetime-local" value="{{ $session['finished_at'] }}"
-                            class="form-control" id="finished_at">
+{{--                        <input name="finished_at" type="datetime-local" value="{{ $session['finished_at'] }}"--}}
+{{--                               class="form-control" id="finished_at">--}}
+                        <input class="form-control" type="time" value="{{ $session['finished_at'] }}"
+                               name="finished_at" id="finished_at">
                     </div>
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-warning py-2 px-4">تحديث</button>

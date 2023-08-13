@@ -58,11 +58,11 @@
                                     <a href="{{ route('sessions.show', $session->id) }}"
                                        class="btn btn-md btn-info mr-2" title="show"><i class="fas fa-eye"></i></a>
 
-                                    @if (count($session->attendances) == 0)
+{{--                                    @if (count($session->attendances) == 0)--}}
                                         <a href="{{ route('sessions.edit', ['id' => $session->id]) }}"
                                            class="btn btn-md btn-warning mr-2" title="Edit"><i
                                                 class="fas fa-edit"></i></a>
-                                    @endif
+{{--                                    @endif--}}
 
                                     @if (count($session->attendances) == 0)
                                         <form method="POST"

@@ -22,7 +22,6 @@ class PackageFactory extends Factory
         return [
             'name' => $this->faker->name,
             'price' => $this->faker->numerify('###'),
-            'number_of_sessions' => 50,
             'image' => 'Client.Png',
             'description' => $this->faker->text(190),
         ];

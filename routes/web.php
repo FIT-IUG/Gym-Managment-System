@@ -1,19 +1,18 @@
 <?php
 
-use App\Http\Controllers\BlogController;
-use App\Http\Controllers\GestController;
-use App\Http\Controllers\UserController;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AttendanceController;
-use App\Http\Controllers\TrainingPackageController;
-use App\Http\Controllers\CoachController;
+use App\Http\Controllers\BlogController;
 use App\Http\Controllers\BuyPackageController;
+use App\Http\Controllers\CoachController;
+use App\Http\Controllers\GestController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\RevenueController;
+use App\Http\Controllers\TrainingPackageController;
 use App\Http\Controllers\TrainingSessionController;
-
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +30,14 @@ Route::prefix('')->middleware('auth:web,coach')->group(function () {
 });
 // Route::get('/', [GestController::class, 'home'])->name('home');
 
+
+// --------------- Auth -> Login & Register
+Auth::routes();
+Route::GET('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
+
+Route::get('coach/login', [CoachController::class, 'loginCoashView'])->name('coach.login_view');
+Route::post('coach/login', [CoachController::class, 'loginCoash'])->name('coach.login');
+
 Route::get('/home', [GestController::class, 'home'])->name('home');
 Route::get('/service', [GestController::class, 'service'])->name('service');
 Route::get('/service/{id}', [GestController::class, 'showService'])->name('show_service');
@@ -44,16 +51,8 @@ Route::group(['middleware' => 'auth', 'middleware' => 'role:client'], function (
     Route::get('/myCoach', [GestController::class, 'myCoach'])->name('clintCoach');
     Route::get('/clintSession', [GestController::class, 'session'])->name('clintSession');
     Route::get('/parchedPackage', [GestController::class, 'parchedPackage'])->name('parchedPackage');
+    Route::post('client/logout', [UserController::class, 'logout'])->name('auth.logout');
 });
-
-
-// --------------- Auth -> Login & Register
-Auth::routes();
-Route::GET('/dashboard', [App\Http\Controllers\HomeController::class, 'index'])->name('dashboard');
-
-Route::get('coach/login', [CoachController::class, 'loginCoashView'])->name('coach.login_view');
-Route::post('coach/login', [CoachController::class, 'loginCoash'])->name('coach.login');
-
 
 
 // --------------- Blogs
@@ -122,6 +121,8 @@ Route::group(['middleware' => 'auth', 'middleware' => 'role:admin', 'middleware'
     Route::PUT('/coaches/{id}', [CoachController::class, 'update'])->name('coaches.update');
     Route::DELETE('/coaches/{id}', [CoachController::class, 'destroy'])->name('coaches.destroy');
 });
+Route::GET('/coach/password/reset', [CoachController::class, 'requestPassword'])->name('coaches.password.request');
+Route::POST('/coach/password/email', [CoachController::class, 'passwordEmail'])->name('coach.password.email');
 
 
 // --------------- Attendance

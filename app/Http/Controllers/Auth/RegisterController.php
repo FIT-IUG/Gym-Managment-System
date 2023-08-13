@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Request;
@@ -45,7 +45,7 @@ class RegisterController extends Controller
     /**
      * Get a validator for an incoming registration request.
      *
-     * @param  array  $data
+     * @param array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
@@ -65,7 +65,7 @@ class RegisterController extends Controller
     /**
      * Create a new user instance after a valid registration.
      *
-     * @param  array  $data
+     * @param array $data
      * @return \App\Models\User
      */
     protected function create(array $data)
@@ -82,16 +82,6 @@ class RegisterController extends Controller
         else :
             $imageName = 'Client.png';
         endif;
-
-        //        $user=User::create([
-        //            'name' => $data['name'],
-        //            'email' => $data['email'],
-        //            'password' => Hash::make($data['123456789']),
-        //            'profile_img' => $imageName,
-        //            'date_of_birth' =>$data['date_of_birth'],
-        //            'gender' => $data['gender'],
-        //            'description'=> $data['description'],
-        //        ]);
         $user = new User([
             'name' => $data['name'],
             'email' => $data['email'],
@@ -108,7 +98,16 @@ class RegisterController extends Controller
         ]);
 
         $user->assignRole('client');
-        return redirect()->route('dashboard');;
+        $saved = $user->save();
+        if ($saved) {
+            return redirect()->route('signIn');
+        } else {
+            return response()->json(
+                ['message' => $data->getMessageBag()->first()],
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+//        return $user;
     }
 
 
@@ -120,25 +119,9 @@ class RegisterController extends Controller
         return redirect()->route('users.show', $user->id);
     }
 
-    public function show(User $user)
+    public function register(Request $request)
     {
-        // Show the details of the user and ask the admin to approve the user
-        return view('users.show', compact('user'));
-    }
-
-    public function approve(User $user)
-    {
-        // Assign a role to the user and save it to the database
-        $user->assignRole('client');
-        $user->save();
-
-        // Redirect the user to a page where they can see the approved user
-        return redirect()->route('users.approved', $user->id);
-    }
-
-    public function approved(User $user)
-    {
-        // Show the approved user
-        return view('users.index', compact('user'));
+        // Redirect the user to a page where they can see the details of the user and approve it
+        return redirect()->route('signIn');
     }
 }

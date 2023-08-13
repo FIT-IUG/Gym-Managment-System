@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CoachRequest;
+use App\Mail\CoachPassword;
 use App\Models\Coach;
 use App\Models\CoachSession;
 use App\Models\User;
@@ -13,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
@@ -122,7 +124,6 @@ class CoachController extends Controller
         $checkSession = CoachSession::where('coach_id', $id)->first();
 
         if ($checkSession == null) {
-            $coach->gym()->dissociate();
             $coach->trainingSessions()->detach();
             $coach->delete();
             return to_route('coaches.index')
@@ -137,11 +138,6 @@ class CoachController extends Controller
 
     public function getCoachesData()
     {
-//        $roleAdmin = auth()->user()->hasRole('admin');
-//
-//        if ($roleAdmin) {
-//            $coaches = Coach::all();
-//        }
         $isAdmin = auth()->user()->hasRole('admin');
         $gender = auth()->user()->gender;
 
@@ -162,12 +158,13 @@ class CoachController extends Controller
 
     public function loginCoashView()
     {
+        $msg = 0;
         session()->put('guard', 'coach');
         $validator = Validator(['guard' => 'coach'], [
             'guard' => 'required|string|in:coach'
         ]);
         if (!$validator->fails()) {
-            return response()->view('auth.loginCoach');
+            return response()->view('auth.loginCoach', ['msg' => $msg]);
         } else {
             abort(Response::HTTP_NOT_FOUND, 'The page you have requested is not found');
         }
@@ -210,34 +207,6 @@ class CoachController extends Controller
         }
     }
 
-    private
-    function generatePGCT(Request $request)
-    {
-        try {
-            $response = Http::asForm()->post('http://127.0.0.1:8000/oauth/token', [
-                'grant_type' => 'password',
-                'client_id' => '2',
-                'client_secret' => 'spijR6zBaufMC5NWzvBHsk8j0vwb1nK7mkMFzojd',
-                'username' => $request->input('email'),
-                'password' => $request->input('password'),
-                'scope' => '*'
-            ]);
-            $decodedResponse = json_decode($response);
-            $user = Coach::where('email', '=', $request->input('email'))->first();
-            $user->setAttribute('token', $decodedResponse->access_token);
-            return response()->json([
-                'status' => true,
-                'message' => 'Logged in successfully',
-                'data' => $user,
-            ], Response::HTTP_OK);
-        } catch (Exception $ex) {
-            return response()->json([
-                'status' => false,
-                'message' => json_decode($response)->message,
-            ], Response::HTTP_BAD_REQUEST);
-        }
-    }
-
     public
     function editProfile()
     {
@@ -248,6 +217,30 @@ class CoachController extends Controller
     {
         $msg = 0;
         return view('profile.editCoachPassword', ["msg" => $msg]);
+    }
+
+    public function requestPassword()
+    {
+        return view('auth.passwords.resetCoach');
+    }
+
+    public function passwordEmail(Request $request)
+    {
+//        dd($request);
+        $msg = 0;
+        $coach = Coach::where('email', '=', $request->input('email'))->first();
+//        dd(User::where('name', '=', 'adminMon')->first());
+        $msg = 'لقد تم إرسال طلبك, سيتم تنفيذه بأسرع وقت ممكن';
+        if ($coach->gender === 'male') {
+            Mail::to(User::where('name', '=', 'admin')->first())->send(new CoachPassword($coach));
+//            return view('emails.passwordForCoach', ['coach' => $coach, "msg" => $msg]);
+//            return view('auth.loginCoach', ['coach' => $coach, "msg" => $msg]);
+        } elseif ($coach->gender === 'female') {
+            Mail::to(User::where('name', '=', 'adminMon')->first())->send(new CoachPassword($coach));
+//            return view('emails.passwordForCoach', ['coach' => $coach, "msg" => $msg]);
+//            return view('auth.loginCoach', ['coach' => $coach, "msg" => $msg]);
+        }
+        return redirect('/coach/login')->with('msg', $msg);
     }
 
     public function updatePassword(Request $request)

@@ -2,22 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
-use App\Models\User;
-use App\Models\Coach;
-use Spatie\Period\Period;
-use App\Models\CoachSession;
-use Illuminate\Http\Request;
-use App\Models\TrainingSession;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\Auth;
-use Spatie\Period\PeriodCollections;
-use App\Http\Requests\TrainingSessionRequest;
 use App\Http\Requests\StoreTrainingSessionRequest;
+use App\Http\Requests\TrainingSessionRequest;
 use App\Models\Attendance;
-use App\Models\Session;
+use App\Models\Coach;
+use App\Models\CoachSession;
+use App\Models\TrainingSession;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Spatie\Period\PeriodCollections;
 
 class TrainingSessionController extends Controller
 {
@@ -30,11 +24,14 @@ class TrainingSessionController extends Controller
             $roleClient = auth()->user()->hasRole('client');
             if ($roleAdmin) {
                 $sessions = TrainingSession::all();
+                foreach ($sessions as $session) {
+                    $daysFromDatabase = json_decode($session->days);
+                    $daysArray = explode(",", $daysFromDatabase); // تقسيم النص إلى مصفوفة
+                    $daysToShow = implode(", ", $daysArray);
+                    $session->days = $daysToShow;
+                }
                 $coaches = Coach::all();
             } elseif ($roleClient) {
-//            $sessions = Auth::user()->trainingSessions;
-//            $trainingSessions = Auth::user()->training_session_id;
-//            $attendance = Auth::user()->attendances;
                 $user = Auth::user();
                 $attendance = User::with('attendances.trainingSessions')->find($user->id);
                 $sessions = $attendance->attendances->pluck('trainingSessions');
@@ -60,19 +57,11 @@ class TrainingSessionController extends Controller
             $isCoach = auth()->guard('coach')->check();
             $roleCoach = auth('coach')->user()->hasRole('coach');
             if ($roleCoach) {
-//            $sessions = Auth::user()->trainingSessions;
-//            $trainingSessions = Auth::user()->training_session_id;
-//            $attendance = Auth::user()->attendances;
                 $coachId = auth('coach')->user()->id;
                 $coach = Coach::find($coachId);
-//            $trainingSessions = $coach->trainingSessions;
                 $sessions = $coach->trainingSessions;
-//            $attendance = User::with('attendances.trainingSessions')->find($user->id);
-//            $sessions = $attendance->attendances->pluck('trainingSessions');
-//            $coaches = Auth::user()->coaches;
                 return view('sessions.index', [
                     'sessions' => $sessions,
-//                'coaches' => $coaches
                 ]);
 
             }
@@ -116,19 +105,6 @@ class TrainingSessionController extends Controller
         ]);
     }
 
-//    public function GetGymNameFromCityName(Request $request)
-//    {
-//        $city_id = $request->get('city_id');
-//        $gyms = Gym::where('city_id', '=', $city_id)->get();
-//        return response()->json($gyms);
-//    }
-
-//    public function GetCoachNameFromGymName(Request $request)
-//    {
-//        $coachs = Coach::all();
-//        return response()->json($coachs);
-//    }
-
     public function show($sessionID)
     {
         $session = TrainingSession::findOrFail($sessionID);
@@ -163,8 +139,6 @@ class TrainingSessionController extends Controller
 
         $start = $formDAta['started_at'];
         $end = $formDAta['finished_at'];
-
-//        $checkOverlap = $this->CheckOverlap($start, $end);
 
         if ($id) {
             $session = TrainingSession::find($id)->update($formDAta);
@@ -204,22 +178,18 @@ class TrainingSessionController extends Controller
         $start = $request['started_at'];
         $end = $request['finished_at'];
         $end = $request['finished_at'];
+        $selectedDays = implode(',', $request->input('day'));
+//        dd($selectedDays);
 //        $coach = $request->coach_id;
-        // $gym_id=$request['gym_id'];
-
-//        $checkOverlap = $this->CheckOverlap($start, $end, $coach);
 
         if ($request->has('coach_id')) {
-            $requestedData =
-                [
-                    // 'gym_id' => $request->gym_id,
-                    'name' => $request->name,
-                    'day' => $request->day,
-                    'started_at' => $start,
-                    'finished_at' => $end,
-                ];
 
-            $newSession = TrainingSession::create($requestedData);
+            $newSession = new TrainingSession();
+            $newSession->name = $request->input('name');
+            $newSession->days = json_encode($selectedDays);
+            $newSession->started_at = $start;
+            $newSession->finished_at = $end;
+            $newSession->save();
             foreach ($request->coach_id as $coach) {
                 CoachSession::create(
                     array(
@@ -235,65 +205,4 @@ class TrainingSessionController extends Controller
         }
     }
 
-//    public function getGymsBelongsToCity($id)
-//    {
-//        echo json_encode(DB::table('gyms')->where('city_id', $id)->get());
-//    }
-
-    // ========================> to retrieve data from database<=============================//
-
-//    public function getSessionsCoachesAndGymsData()
-//    {
-//        $roleAdmin = auth()->user()->hasRole('admin');
-//        $roleClient = auth()->user()->hasRole('client');
-//
-//        if ($roleAdmin) {
-//            $sessions = TrainingSession::all();
-//            $coaches = Coach::all();
-//        } elseif ($roleClient) {
-//            $sessions = Auth::user()->trainingSessions;
-//            $coaches = Auth::user()->coaches;
-//        }
-//
-//        return [$sessions, $coaches];
-//    }
-
-
-    // ========================> to check time overlap<=============================//
-//    public function CheckOverlap($start, $end, $cosh)
-//    {
-//        // $sessions=TrainingSession::find($start)->trainingSessions;
-//        $sessions = TrainingSession::find($cosh);
-//        dd($sessions);
-//
-//
-//        $start = date('Y-m-d H:i:s', strtotime($start));
-//        $end = date('Y-m-d H:i:s', strtotime($end));
-//        $errors = 0;
-//        foreach ($sessions as $session) {
-//            $oldStart = date('Y-m-d H:i:s', strtotime($session->started_at));
-//            $oldEnd = date('Y-m-d H:i:s', strtotime($session->finished_at));
-//            if (
-//                ($this->betweenForStart($start, $oldStart, $oldEnd) ||
-//                    $this->betweenForEdnd($end, $oldStart, $oldEnd))
-//
-//                ||
-//                ($this->betweenForStart($oldStart, $start, $end)
-//                    || $this->betweenForEdnd($oldEnd, $start, $end))
-//            ) {
-//                $errors++;
-//            }
-//        }
-//        return $errors;
-//    }
-
-//    function betweenForStart($start, $oldstart, $oldend)
-//    {
-//        return $start >= $oldstart && $start < $oldend;
-//    }
-
-//    function betweenForEdnd($end, $oldstart, $oldend)
-//    {
-//        return $end > $oldstart && $end <= $oldend;
-//    }
 }

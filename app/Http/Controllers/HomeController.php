@@ -6,16 +6,10 @@ use App\Models\Attendance;
 use App\Models\Blog;
 use App\Models\BuyPackage;
 use App\Models\Coach;
-use App\Models\CoachSession;
-use Illuminate\Http\Request;
+use App\Models\Package;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
-use App\Models\User;
-use App\Models\Package;
-use Illuminate\Contracts\Auth\Guard;
-use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -39,20 +33,17 @@ class HomeController extends Controller
         //        dd(auth()->user());
         $packages = Package::all();
         $isCoach = auth()->guard('coach')->check();
-        //        dd(auth()->user()->Role('admin'));
         $isAdmin = auth()->user()->hasRole('admin');
-        //        $isCoach = auth('coach')->user()->hasRole('coach');
-        //        $isGymManager = auth()->user()->hasRole('gymManager');
         $isClient = auth()->user()->hasRole('client');
 
-        if (!$isClient) {
+        if (!$isClient && !$isCoach) {
             if ($isAdmin) {
                 $boughtPackages = BuyPackage::all();
                 $boughtPackagesCount = count($boughtPackages);
-                $allClients = User::role('client')->get();
+                $allClients = User::role('client')->whereNull('banned_at')->get();
             }
 
-            $paidPrice = ($boughtPackages->sum('price') / 100);
+            $paidPrice = ($boughtPackages->sum('price'));
             $allClientsCount = count($allClients);
 
             return view('dashboard', data: [
@@ -63,17 +54,11 @@ class HomeController extends Controller
                 'paidPrice' => $paidPrice,
             ]);
         } elseif ($isCoach) {
-            return view('dashboard', data: [
-                //                'packages' => $packages,
-                //                'boughtPackages' => $boughtPackages,
-                //                'boughtPackagesCount' => $boughtPackagesCount,
-                //                'allClientsCount' => $allClientsCount,
-                //                'paidPrice' => $paidPrice,
-            ]);
+            return $this->indexCoach();
         } else {
             $attendances = Attendance::where('user_id', auth()->user()->id)->get();
             $boughtPackages = BuyPackage::where('user_id', auth()->user()->id)->get();
-            $coaches = Coach::all();
+            $coaches = Coach::where('gender', 'male')->get();
             $services = Package::all();
             $blogs = Blog::all();
             foreach ($services as $service) {
@@ -91,29 +76,21 @@ class HomeController extends Controller
 
     public function indexCoach()
     {
-        //        dd(auth()->user());
-        //        $packages = Package::all();
+        //
         $isCoach = auth()->guard('coach')->check();
-        //        dd(auth()->user()->Role('admin'));
         $isCoach = auth('coach')->user()->hasRole('coach');
 
         if ($isCoach) {
             $coachId = auth('coach')->user()->id;
             $coach = Coach::find($coachId);
             $trainingSessions = $coach->trainingSessions;
-            //            dd($trainingSessions);
-            //                $sessions = Coach::with('trainingSessions')->where('id', auth()->user()->id)->get();
             return view('dashboard', data: [
                 'trainingSessions' => $trainingSessions,
-                //                'boughtPackages' => $boughtPackages,
-                //                'boughtPackagesCount' => $boughtPackagesCount,
-                //                'allClientsCount' => $allClientsCount,
-                //                'paidPrice' => $paidPrice,
             ]);
         } else {
             $attendances = Attendance::where('user_id', auth()->user()->id)->get();
             $boughtPackages = BuyPackage::where('user_id', auth()->user()->id)->get();
-            $coaches = Coach::all();
+            $coaches = Coach::where('gender', 'male')->get();
             $services = Package::all();
             $blogs = Blog::all();
             foreach ($services as $service) {

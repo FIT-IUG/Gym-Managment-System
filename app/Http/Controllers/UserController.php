@@ -2,22 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Coach;
-use App\Models\User;
-use App\Http\Requests\StoreUserRequest;
-use App\Http\Requests\UpdateUserRequest;
 use App\Models\Attendance;
 use App\Models\BuyPackage;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use Symfony\Component\HttpFoundation\Response;
 
 
@@ -246,14 +239,20 @@ class UserController extends Controller
     public function ban($user)
     {
         User::findOrFail($user)->ban([
-            'comment' => 'Enjoy your ban!',
+            'comment' => 'لقد تم انتهاء الإشتراك مع فترة التمديد!',
         ]);
+        $verfiyUser = User::findOrFail($user);
+        $verfiyUser->email_verified_at = null;
+        $verfiyUser->save();
         return redirect()->route('users.index');
     }
 
     public function unban($user)
     {
         User::findOrFail($user)->unban();
+        $verfiyUser = User::findOrFail($user);
+        $verfiyUser->email_verified_at = now();
+        $verfiyUser->save();
         return redirect()->route('users.index');
     }
 
@@ -263,5 +262,15 @@ class UserController extends Controller
         return view('users.banned', [
             "bannedUsers" => $bannedUsers
         ]);
+    }
+
+
+    public function logout(Request $request)
+    {
+        $this->middleware('auth');
+        $guard = session('guard');
+        Auth::guard($guard)->logout();
+        $request->session()->invalidate();
+        return redirect()->route('signIn');
     }
 }

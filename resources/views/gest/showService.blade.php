@@ -19,7 +19,7 @@
 
             <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item "><a href="{{ roerute('home') }}"
+                    <li class="breadcrumb-item "><a href="{{ route('home') }}"
                             class="text-white text-decoration-none">الرئيسية</a></li>
                     <li class="breadcrumb-item "><a href="{{ route('service') }}"
                             class="text-white text-decoration-none pe-2">خدماتنا</a>

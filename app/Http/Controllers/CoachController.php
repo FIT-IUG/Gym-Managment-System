@@ -3,22 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CoachRequest;
+use App\Http\Requests\UpdateCoachRequest;
 use App\Mail\CoachPassword;
 use App\Models\Coach;
 use App\Models\CoachSession;
 use App\Models\User;
-use Database\Factories\CoachFactory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
-use Yajra\DataTables\Facades\DataTables;
 
 class CoachController extends Controller
 {
@@ -88,7 +85,7 @@ class CoachController extends Controller
         );
     }
 
-    public function update($id, CoachRequest $request)
+    public function update($id, UpdateCoachRequest $request)
     {
         $formDAta = request()->all();
         $coach = Coach::find($id);
@@ -109,7 +106,8 @@ class CoachController extends Controller
         }
 //        $requestedData = request()->all();
         $coach->name = $request->name;
-        $coach->gender = $request->gender;
+//        $coach->gender = $request->gender;
+        $coach->password = Hash::make($request->input('password'));
         $coach->description = $request->description;
         $coach->profile_image = $imageName;
         $isSaved = $coach->save();

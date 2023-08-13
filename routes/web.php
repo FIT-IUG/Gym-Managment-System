@@ -44,6 +44,7 @@ Route::get('/service/{id}', [GestController::class, 'showService'])->name('show_
 Route::get('/timeOfWork', [GestController::class, 'timeOfWork'])->name('time_of_work');
 Route::get('/pricing', [GestController::class, 'pricing'])->name('pricing');
 Route::get('/blog', [GestController::class, 'blog'])->name('blog');
+Route::get('/blog/{id}', [GestController::class, 'showBlog'])->name('show_blog');
 Route::get('/signin', [GestController::class, 'signinView'])->name('signIn');
 Route::get('/signup', [GestController::class, 'signupView'])->name('signUp');
 Route::group(['middleware' => 'auth', 'middleware' => 'role:client'], function () {

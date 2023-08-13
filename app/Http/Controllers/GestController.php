@@ -40,6 +40,11 @@ class GestController extends Controller
         $service = Package::find($id);
         return view('gest.showService', ['service' => $service]);
     }
+    public function showBlog($id)
+    {
+        $blog = Blog::find($id);
+        return view('gest.showBlog', ['blog' => $blog]);
+    }
 
     public function timeOfWork()
     {

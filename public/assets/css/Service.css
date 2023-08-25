@@ -1,0 +1,111 @@
+@import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100;200;300;400;500;600;700;800;900&family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Mulish:wght@200;300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap');
+
+:root {
+  --yallow:#E1E002;
+  --dark: #181818;
+  --blackk: #252525;
+  --dark-light: #2C2C2C;
+  --headerHieght: 10vh;
+}
+
+body {
+  font-family: 'Roboto', sans-serif ;
+}
+.min-vh-90{
+  min-height: 89vh !important;
+}
+.f11{
+  font-size: 12px ;
+}
+.f12{
+  font-size: 14px !important;
+}
+.f50{
+  font-size: 70px ;
+}
+.fs-25{
+  font-size: 20px;
+}
+.arrowsize{
+  width: 40px;
+  transform: translateX(-10px)  rotate(-180deg) ;
+  transition: 0.5s;
+}
+a:hover .arrowsize{
+  transform: translateX(-20px)  rotate(-180deg);
+}
+.bg-primary-op {
+  background-color:  #212121a2 !important;
+}
+.bg-primary {
+  background-color: var(--dark-light) !important;
+}
+.bg-secondary{
+  background-color: var(--dark) !important;
+}
+.bg-secondary-op{
+  background-color: #181818a7 !important;
+}
+.min-vh-10 {
+  min-height: var(--headerHieght) !important;
+}
+.text-warning {
+  color: var(--yallow) !important;
+}
+.bg-warning{
+  background-color: var(--yallow) !important;
+}
+.btn-primary{
+  background-color: var(--yallow) !important;
+  border: 1px solid var(--yallow) !important;
+  color: var(--blackk) !important;
+}
+.btn-primary:hover{
+  background-color: transparent !important;
+  border: 1px solid white !important;
+  color: white !important;
+}
+.btn-secondary{
+  background-color: transparent !important;
+  border: 1px solid white !important;
+  color: white !important;
+}
+.btn-secondary:hover{
+  background-color: var(--yallow) !important;
+  border: 1px solid var(--yallow) !important;
+  color: var(--blackk) !important;
+}
+
+
+/* navbar section */
+
+.nav-item .nav-link.active::after {
+  content: "";
+  width: 100%;
+  height: 2px;
+  background-color: var(--yallow);
+  display: block;
+  clip-path: polygon(0 0, 51% 0, 51% 100%, 0% 100%);
+  transition: 0.5s;
+  margin-top: 2px;
+}
+.nav-item .nav-link::after {
+  content: "";
+  width: 100%;
+  height: 2px;
+  background-color: var(--yallow);
+  display: block;
+  clip-path: polygon(0 0, 0 0, 0 100%, 0% 100%);
+  transition: 0.5s;
+  margin-top: 2px;
+}
+.nav-item .nav-link:hover::after {
+  clip-path: polygon(0 0, 51% 0, 51% 100%, 0% 100%);
+}
+
+.nav-item.dropdown .dropdown-menu .dropdown-item:hover{
+ background-color: #180b0b41 !important;
+}
+.ull {
+  list-style-image: url('../img/Service/listt.svg');
+}

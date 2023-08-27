@@ -18,7 +18,7 @@ class LoginControllerTest extends TestCase
     use DatabaseTransactions, WithFaker;
 
     /** @test */
-    public function it_can_show_the_login_form()
+    public function isLoginFormShowed()
     {
         $response = $this->get('/login');
 
@@ -27,7 +27,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function it_can_authenticate_a_user()
+    public function isUserAuthenticated()
     {
 
         $user = User::factory(1)->create()->first();
@@ -42,7 +42,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function it_redirects_back_with_invalid_credentials()
+    public function isCredentialsInValid()
     {
         $user = User::factory(1)->create()->first();
 
@@ -59,7 +59,7 @@ class LoginControllerTest extends TestCase
     }
 
     /** @test */
-    public function it_logs_out_a_user()
+    public function isUserLogout()
     {
         $user = User::factory()->create();
 

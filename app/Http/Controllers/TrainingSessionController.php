@@ -45,14 +45,11 @@ class TrainingSessionController extends Controller
                 foreach ($sessions as $session) {
                     $coaches = $coaches->merge($session->coaches);
                 }
-                //                dd($coaches);
-                //                $coaches = Auth::user()->coaches;
                 return view('sessions.index', [
                     'sessions' => $sessions,
                     'coaches' => $coaches
                 ]);
             }
-            //        dd($trainingSessions);
             return view('sessions.index', [
                 'sessions' => $sessions,
                 'coaches' => $coaches
@@ -118,12 +115,9 @@ class TrainingSessionController extends Controller
             $gender = auth('coach')->user()->gender;
         }
         $session = TrainingSession::findOrFail($sessionID);
-        // $attendances = $session->attendances;
-        // $attendances = Attendance::where('training_session_id', $sessionID)->get();
         $users = $session->users->filter(function ($user) use ($gender) {
             return $user->gender === $gender;
         });
-        // dd($users);
 
         $daysFromDatabase = json_decode($session->days);
         $daysArray = explode(",", $daysFromDatabase); // تقسيم النص إلى مصفوفة
@@ -134,9 +128,7 @@ class TrainingSessionController extends Controller
     }
     public function attend(Request $request, $trainingSession)
     {
-        // dd($request);
         $session = TrainingSession::findOrFail($trainingSession);
-        // dd($session);
 
         foreach ($request->input('users') as $userId => $days) {
             foreach ($days as $day => $isChecked) {
@@ -223,8 +215,7 @@ class TrainingSessionController extends Controller
         $end = $request['finished_at'];
         $end = $request['finished_at'];
         $selectedDays = implode(',', $request->input('day'));
-        //        dd($selectedDays);
-        //        $coach = $request->coach_id;
+
 
         if ($request->has('coach_id')) {
 
@@ -244,8 +235,7 @@ class TrainingSessionController extends Controller
             }
             return redirect()->route('sessions.index');
         } else {
-            // return back()->with('error', 'Session date will Overlap another session, Choose different Date');
-            return Redirect::back()->withErrors(['msg' => 'time overlap ,choose another time']);
+            return Redirect::back()->withErrors(['msg' => 'حدث خطأ في إضافة حصة التدريبية']);
         }
     }
 }

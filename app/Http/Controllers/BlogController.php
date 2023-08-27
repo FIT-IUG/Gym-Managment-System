@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -54,11 +55,11 @@ class BlogController extends Controller
             'description' => 'required|string|min:15'
         ]);
         if ($validator->fails()) {
-            return response()->json(["message" => $validator->getMessageBag()->first()], Response::HTTP_BAD_REQUEST);
+            return Redirect::back()->withErrors($validator->errors());
+//            return response()->json(["message" => $validator->getMessageBag()->first()], Response::HTTP_BAD_REQUEST);
         }
         $image = $request->file('image');
 
-//        dd($image);
         if ($image != null) :
             $imageName = time() . rand(1, 200) . '.' . $image->extension();
             $image->move(public_path('imgs//' . 'blogs'), $imageName);
@@ -86,8 +87,7 @@ class BlogController extends Controller
     public function show(Blog $blog)
     {
         //
-//        $blog = Blog::findOrFail($id);
-//        dd($blog);
+        $blog = Blog::findOrFail($blog->id);
         return view('blogs.show', ['blog' => $blog]);
     }
 
@@ -100,12 +100,11 @@ class BlogController extends Controller
     public function edit(Blog $blog)
     {
         //
-//        $blog = Blog::find($id);
+        //        $blog = Blog::find($id);
 
         return response()->view("blogs.edit", [
             'blog' => $blog,
         ]);
-
     }
 
     /**
@@ -125,11 +124,11 @@ class BlogController extends Controller
             'description' => 'required|string|min:15'
         ]);
         if ($validator->fails()) {
-            return response()->json(["message" => $validator->getMessageBag()->first()], Response::HTTP_BAD_REQUEST);
+            return Redirect::back()->withErrors($validator->errors());
+//            return response()->json(["message" => $validator->getMessageBag()->first()], Response::HTTP_BAD_REQUEST);
         }
         $image = $request->file('image');
 
-//        dd($image);
         if ($image != null) :
             $imageName = time() . rand(1, 200) . '.' . $image->extension();
             $image->move(public_path('imgs//' . 'blogs'), $imageName);
@@ -138,7 +137,6 @@ class BlogController extends Controller
         endif;
 
         // handle creator
-//        $blog = Blog::findOrFail($blogId);
         $blog->title = $request->input('title');
         $blog->subTitle = $request->input('subTitle');
         $blog->description = $request->input('description');
@@ -157,7 +155,6 @@ class BlogController extends Controller
     public function destroy(Blog $blog)
     {
         //
-//        dd($id);
         $blog->delete();
         return to_route('blogs.index')
             ->with('success', 'blog deleted successfully');

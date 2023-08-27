@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpFoundation\Response;
 
 
 class UserController extends Controller
@@ -71,7 +71,7 @@ class UserController extends Controller
         return view('users.show', ['user' => $user]);
     }
 
-    // public function store(StoreUserRequest $request)
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -81,7 +81,9 @@ class UserController extends Controller
             'confirmPassword' => 'required|same:passwd',
             'date_of_birth' => 'required|date',
         ]);
-        // dd($request);
+        if ($validator->fails()) {
+            return Redirect::back()->withErrors($validator->errors());
+        }
         $img = $request->file('profile_img');
 
         if ($img != null) :
@@ -124,7 +126,8 @@ class UserController extends Controller
             'date_of_birth' => 'required|date',
         ]);
         if ($validator->fails()) {
-            return response()->json(["message" => $validator->getMessageBag()->first()], Response::HTTP_BAD_REQUEST);
+            return Redirect::back()->withErrors($validator->errors());
+//            return response()->json(["message" => $validator->getMessageBag()->first()], Response::HTTP_BAD_REQUEST);
         }
         $user->name = $request->input('name');
         $user->email = $request->input('email');
@@ -174,9 +177,11 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $userID],
             'date_of_birth' => 'required|date',
         ]);
+        if ($validated->fails()) {
+            return Redirect::back()->withErrors($validated->errors());
+        }
 
         $oldimg = $request->oldimg;
-        //        dd($request);
 
         if ($request->hasFile('profile_img')) {
             $request->validate([

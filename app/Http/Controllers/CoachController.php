@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -39,13 +40,6 @@ class CoachController extends Controller
 
     public function store(CoachRequest $request)
     {
-//        $validator = Validator::make($request->all(), [
-//            'name' => 'required|min:3',
-//            'profile_image' => 'required|file|mimes:jpg,jpeg,png',
-//            'description' => 'required|min:6',
-//
-//        ]);
-//        dd($request);
         $img = $request->file('profile_image');
         if ($img != null) :
             $imageName = time() . rand(1, 200) . '.' . $img->extension();
@@ -53,7 +47,7 @@ class CoachController extends Controller
         else :
             $imageName = 'Client.Png';
         endif;
-//        $requestedData = request()->all();
+
         $coach = new Coach();
         $coach->name = $request->input('name');
         $coach->email = $request->input('email');
@@ -89,7 +83,6 @@ class CoachController extends Controller
     {
         $formDAta = request()->all();
         $coach = Coach::find($id);
-//        dd($coach);
         $previousImage = $coach->profile_image;
         $img = $request->file('profile_image');
         if ($img != null) {
@@ -104,9 +97,7 @@ class CoachController extends Controller
             // If no new image is uploaded, keep the previous image
             $imageName = $previousImage;
         }
-//        $requestedData = request()->all();
         $coach->name = $request->name;
-//        $coach->gender = $request->gender;
         $coach->password = Hash::make($request->input('password'));
         $coach->description = $request->description;
         $coach->profile_image = $imageName;
@@ -127,7 +118,6 @@ class CoachController extends Controller
             return to_route('coaches.index')
                 ->with('success', 'Coach deleted successfully');
         } else {
-            // return Redirect::back()->withErrors(['message' => 'delete']);
             return redirect()->route('coaches.index')->with('errorMessage', 'cannt be deleted');
 
         }
@@ -175,33 +165,20 @@ class CoachController extends Controller
             "password" => "required|string|min:7",
         ]);
         $guard = session()->get('guard');
-//        dd($guard);
-        // dd($request->input('password'),Hash::make($request->input('password')));
         if (!$validator->fails()) {
-//            $coach = Coach::where('email', '=', $request->input('email'))->first();
-//            if (Hash::check($request->input('password'), $coach->password)) {
-//                $token = $coach->createToken('Coach')->accessToken;
-//                $coach->setAttribute('token', $token);
-//                return redirect()->route('dashboard');
-//            } else {
-//                return redirect()->route('login');
-//            }
             $credentials = ['email' => $request->input('email'), 'password' => $request->input('password')];
             if (Auth::guard('coach')->attempt($credentials)) {
                 return redirect()->route('dashboardCoach');
-//                return response()->json(['message' => 'Login success'], Response::HTTP_OK);
             } else {
                 return redirect()->route('coach.login_view');
             }
-//            return $this->generatePGCT($request);
         } else {
-            return
-//                redirect()->route('coach.login_view')->with(['message' => $validator->getMessageBag()->first()],
-//                Response::HTTP_BAD_REQUEST);
-                response()->json(
-                    ['message' => $validator->getMessageBag()->first()],
-                    Response::HTTP_BAD_REQUEST
-                );
+            return Redirect::back()->withErrors($validator->errors());
+//            return
+//                response()->json(
+//                    ['message' => $validator->getMessageBag()->first()],
+//                    Response::HTTP_BAD_REQUEST
+//                );
         }
     }
 
@@ -224,19 +201,13 @@ class CoachController extends Controller
 
     public function passwordEmail(Request $request)
     {
-//        dd($request);
         $msg = 0;
         $coach = Coach::where('email', '=', $request->input('email'))->first();
-//        dd(User::where('name', '=', 'adminMon')->first());
         $msg = 'لقد تم إرسال طلبك, سيتم تنفيذه بأسرع وقت ممكن';
         if ($coach->gender === 'male') {
             Mail::to(User::where('name', '=', 'admin')->first())->send(new CoachPassword($coach));
-//            return view('emails.passwordForCoach', ['coach' => $coach, "msg" => $msg]);
-//            return view('auth.loginCoach', ['coach' => $coach, "msg" => $msg]);
         } elseif ($coach->gender === 'female') {
             Mail::to(User::where('name', '=', 'adminMon')->first())->send(new CoachPassword($coach));
-//            return view('emails.passwordForCoach', ['coach' => $coach, "msg" => $msg]);
-//            return view('auth.loginCoach', ['coach' => $coach, "msg" => $msg]);
         }
         return redirect('/coach/login')->with('msg', $msg);
     }
@@ -244,7 +215,6 @@ class CoachController extends Controller
     public function updatePassword(Request $request)
     {
         $coachId = auth('coach')->id();
-//        dd($coachId);
 
         $data = $request->validate([
             'newpassword' => 'required|min:6',
@@ -260,15 +230,13 @@ class CoachController extends Controller
             DB::table('coaches')->where('id', '=', $coachId)->update(['password' => $newPassword]);
             return redirect()->route('dashboard');
         } else {
-            $msg = 'please enter your old password correctly';
+            $msg = 'الرجاء إدخال كلمة المرور القديمة بشكل صحيح';
             return view('profile.editPassword', ['msg' => $msg]);
         }
     }
 
-    public
-    function updateProfile(Request $request)
+    public function updateProfile(Request $request)
     {
-//        dd($request);
         $coachID = $request->id;
 
         $validated = $request->validate([
@@ -278,7 +246,6 @@ class CoachController extends Controller
         ]);
 
         $oldimg = $request->oldimg;
-//        dd($request);
 
         if ($request->hasFile('profile_image')) {
             $request->validate([
@@ -287,7 +254,7 @@ class CoachController extends Controller
 
             $imageName = time() . '.' . $request->file('profile_image')->extension();
             $request->file('profile_image')->move(public_path('imgs//' . 'coaches'), $imageName);
-//            dd($imageName);
+
             DB::table('coaches')->where('id', '=', $coachID)->update(['profile_image' => $imageName]);
 
             if ($oldimg != "Client.png") {
@@ -302,7 +269,6 @@ class CoachController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'description' => $validated['description'],
-//            'profile_image' => $imageName
         ]);
         return redirect()->route('dashboard');
     }

@@ -37,8 +37,10 @@
                                     <tr>
                                         <td>{{ $user->name }}</td>
                                         <td>{{ $user->email }}</td>
-                                        <td><img src="{{ url('imgs/users/' . $user->profile_img) }} " width="50px"
-                                                height="50px" alt="not found" /></td>
+                                        <td>
+                                            <img src="{{ $user->profile_img ? url('imgs/users/' . $user->profile_img) : url('imgs/users/Client.png') }}"
+                                                width="50px" height="50px" alt="not found" />
+                                        </td>
                                         <td class="d-flex justify-content-center">
                                             <a href="{{ route('users.show', $user->id) }}" class="btn btn-md btn-info mr-2"><i
                                                     class="fas fa-eye"></i></a>

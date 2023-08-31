@@ -27,8 +27,8 @@ class StoreUserRequest extends FormRequest
             // validate data from user
             'name' => 'required|max:50|min:3',
             'email' => 'required|unique:users|email',
-            'passwd' => 'required|min:6|max:20',
-            'confirmPassword' => 'required|same:passwd',
+            'password' => 'required|min:6|max:20',
+            'confirmPassword' => 'required|same:password',
             'profileImg' => 'image|mimes:jpg,jpeg,png',
             'date_of_birth' => 'required|date',
         ];

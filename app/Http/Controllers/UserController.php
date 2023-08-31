@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
 use App\Models\Attendance;
 use App\Models\BuyPackage;
 use App\Models\User;
@@ -72,13 +73,14 @@ class UserController extends Controller
     }
 
 
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
+        // dd($request);
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:3',
             'email' => 'required|unique:users|email',
-            'passwd' => 'required|min:6|max:20',
-            'confirmPassword' => 'required|same:passwd',
+            'password' => 'required|min:6|max:20',
+            'confirmPassword' => 'required|same:password',
             'date_of_birth' => 'required|date',
         ]);
         if ($validator->fails()) {
@@ -177,9 +179,9 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $userID],
             'date_of_birth' => 'required|date',
         ]);
-        if ($validated->fails()) {
-            return Redirect::back()->withErrors($validated->errors());
-        }
+        // if ($validated->fails()) {
+        //     return Redirect::back()->withErrors($validated->errors());
+        // }
 
         $oldimg = $request->oldimg;
 

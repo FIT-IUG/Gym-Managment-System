@@ -12,15 +12,11 @@ use Symfony\Component\HttpFoundation\Response;
 class BlogController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * This function appears to be responsible for displaying a list of blogs.
      */
     public function index()
     {
-        //
         $blogs = Blog::all();
-
         return view('blogs.index', ['blogs' => $blogs]);
     }
 
@@ -40,10 +36,7 @@ class BlogController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * This function appears to be responsible for storing a new blog post.
      */
     public function store(Request $request)
     {
@@ -56,7 +49,6 @@ class BlogController extends Controller
         ]);
         if ($validator->fails()) {
             return Redirect::back()->withErrors($validator->errors());
-//            return response()->json(["message" => $validator->getMessageBag()->first()], Response::HTTP_BAD_REQUEST);
         }
         $image = $request->file('image');
 
@@ -79,10 +71,7 @@ class BlogController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param \App\Models\Blog $blog
-     * @return \Illuminate\Http\Response
+     * This show function is responsible for displaying a specific blog post.
      */
     public function show(Blog $blog)
     {
@@ -108,11 +97,7 @@ class BlogController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Blog $blog
-     * @return \Illuminate\Http\Response
+     * This update function is responsible for updating an existing blog post.
      */
     public function update(Request $request, Blog $blog)
     {
@@ -125,7 +110,6 @@ class BlogController extends Controller
         ]);
         if ($validator->fails()) {
             return Redirect::back()->withErrors($validator->errors());
-//            return response()->json(["message" => $validator->getMessageBag()->first()], Response::HTTP_BAD_REQUEST);
         }
         $image = $request->file('image');
 
@@ -147,10 +131,7 @@ class BlogController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\Models\Blog $blog
-     * @return \Illuminate\Http\Response
+     * This destroy function is responsible for deleting a specific blog post.
      */
     public function destroy(Blog $blog)
     {

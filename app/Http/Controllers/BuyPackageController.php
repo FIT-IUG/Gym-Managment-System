@@ -15,6 +15,10 @@ use Illuminate\Support\Facades\Auth;
 
 class BuyPackageController extends Controller
 {
+    /**
+     * This function is responsible for displaying a list of purchased packages.
+     * It includes pagination and filters the displayed packages based on the user's role and gender.
+     */
     public function index()
     {
         Paginator::useBootstrapFive();
@@ -38,12 +42,16 @@ class BuyPackageController extends Controller
         return view('buyPackage.index', ['boughtPackageCollection' => $boughtPackageCollection]);
     }
 
+    /**
+     * This function is responsible for displaying the details of a purchased package.
+     */
     public function show(BuyPackage $Package)
     {
-
         return view('buyPackage.show', ['package' => $Package]);
     }
-
+    /**
+     * This function is responsible for deleting a purchased training package.
+     */
     public function destroy(BuyPackage $package)
     {
         $package->delete();
@@ -92,11 +100,11 @@ class BuyPackageController extends Controller
         ]);
     }
 
-
+    /**
+     * This function is responsible for creating a new record of a purchased training package.
+     */
     public function store(Request $requestObj)
     {
-        //        dd($requestObj);
-
         $package = DB::table('training_packages')->where('id', $requestObj->package_id)->first();
         dd($package->training_session_id);
         BuyPackage::create([

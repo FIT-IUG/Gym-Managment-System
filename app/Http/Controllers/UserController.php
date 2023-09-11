@@ -18,6 +18,10 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
 
+    /**
+     * This function is responsible for rendering the index view for users,
+     * considering different scenarios based on the user's role and authentication guard.
+     */
     public function index()
     {
         $isWeb = auth()->guard('web')->check();
@@ -66,16 +70,20 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * This function is responsible for displaying the details of a user based on their user ID.
+     */
     public function show($userID)
     {
         $user = User::findOrFail($userID);
         return view('users.show', ['user' => $user]);
     }
 
-
+    /**
+     * This function is responsible for handling the creation (registration) of a new user.
+     */
     public function store(StoreUserRequest $request)
     {
-        // dd($request);
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:3',
             'email' => 'required|unique:users|email',
@@ -120,6 +128,9 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * This function handles the update of an existing user's information.
+     */
     public function update(Request $request, User $user)
     {
         $validator = Validator::make($request->all(), [
@@ -129,7 +140,6 @@ class UserController extends Controller
         ]);
         if ($validator->fails()) {
             return Redirect::back()->withErrors($validator->errors());
-//            return response()->json(["message" => $validator->getMessageBag()->first()], Response::HTTP_BAD_REQUEST);
         }
         $user->name = $request->input('name');
         $user->email = $request->input('email');
@@ -139,6 +149,9 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
+    /**
+     * This function is responsible for deleting a user's account.
+     */
     public function destroy($userId)
     {
         $checkAttendance = Attendance::where('user_id', $userId)->first();
@@ -169,9 +182,11 @@ class UserController extends Controller
         return view('profile.editProfile');
     }
 
+    /**
+     * This function handles the update of a user's profile information.
+     */
     public function updateProfile(Request $request)
     {
-        //        dd($request);
         $userID = $request->id;
 
         $validated = $request->validate([
@@ -179,9 +194,6 @@ class UserController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $userID],
             'date_of_birth' => 'required|date',
         ]);
-        // if ($validated->fails()) {
-        //     return Redirect::back()->withErrors($validated->errors());
-        // }
 
         $oldimg = $request->oldimg;
 
@@ -192,7 +204,6 @@ class UserController extends Controller
 
             $imageName = time() . '.' . $request->file('profile_img')->extension();
             $request->file('profile_img')->move(public_path('imgs//' . 'users'), $imageName);
-            //            dd($imageName);
             DB::table('users')->where('id', '=', $userID)->update(['profile_img' => $imageName]);
 
             if ($oldimg != "Client.png") {
@@ -218,10 +229,12 @@ class UserController extends Controller
         return view('profile.editPassword', ["msg" => $msg]);
     }
 
+    /**
+     * This function handles the process of updating a user's password.
+     */
     public function updatePassword(Request $request)
     {
         $userid = Auth::id();
-        //        dd($userid);
 
         $data = $request->validate([
             'newpassword' => 'required|min:6',
@@ -243,6 +256,9 @@ class UserController extends Controller
     }
 
 
+    /**
+     *  This function is responsible for banning a user.
+     */
     public function ban($user)
     {
         User::findOrFail($user)->ban([
@@ -254,6 +270,9 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
+    /**
+     * This function is responsible for unbanning a user.
+     */
     public function unban($user)
     {
         User::findOrFail($user)->unban();

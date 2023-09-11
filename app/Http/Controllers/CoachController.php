@@ -20,6 +20,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CoachController extends Controller
 {
+    /**
+     * This function is responsible for rendering the index view for coaches.
+     * It begins by checking if the currently authenticated user has the 'admin' role.
+     * It also retrieves the gender of the authenticated user.
+     */
     public function index()
     {
         $coaches = $this->getCoachesData()[0];
@@ -38,6 +43,12 @@ class CoachController extends Controller
         return view('coaches.create');
     }
 
+    /**
+     * This function handles the creation of a new coach record.
+     * It first checks if an image file has been uploaded in the request.
+     * If an image is provided, it is saved to the server with a unique name.
+     * If no image is uploaded, a default image ('Client.Png') is assigned.
+     */
     public function store(CoachRequest $request)
     {
         $img = $request->file('profile_image');
@@ -61,6 +72,9 @@ class CoachController extends Controller
         return redirect()->route('coaches.index');
     }
 
+    /**
+     * This function retrieves and displays the details of a specific coach based on the provided coach ID.
+     */
     public function show($id)
     {
         $coach = Coach::findOrFail($id);
@@ -79,6 +93,10 @@ class CoachController extends Controller
         );
     }
 
+    /*
+    This function updates the information of a coach based on the provided input from the request.
+    It handles the upload of a new profile image, if provided, and deletes the previous image
+    */
     public function update($id, UpdateCoachRequest $request)
     {
         $formDAta = request()->all();
@@ -106,6 +124,7 @@ class CoachController extends Controller
     }
 
 
+    // This function handles the deletion of a coach's record.
     public function destroy($id)
     {
 
@@ -212,6 +231,9 @@ class CoachController extends Controller
         return redirect('/coach/login')->with('msg', $msg);
     }
 
+    /**
+     * This function handles the process of updating a coach's password.
+     */
     public function updatePassword(Request $request)
     {
         $coachId = auth('coach')->id();
@@ -235,6 +257,9 @@ class CoachController extends Controller
         }
     }
 
+    /**
+     * This function handles the updating of a coach's profile information.
+     */
     public function updateProfile(Request $request)
     {
         $coachID = $request->id;

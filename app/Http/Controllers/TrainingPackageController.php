@@ -15,6 +15,9 @@ use RealRashid\SweetAlert\Facades\Alert;
 
 class TrainingPackageController extends Controller
 {
+    /**
+     * This function retrieves all training packages from the database and prepares them for display.
+     */
     public function index()
     {
         $packageCollection = Package::all();
@@ -28,6 +31,9 @@ class TrainingPackageController extends Controller
         return view('trainingPackages.datatables-front', ['packageCollection' => $packageCollection]);
     }
 
+    /**
+     * This function is used to display the details of a specific training package.
+     */
     public function show(Package $Package)
     {
         $id = $Package->id;
@@ -41,15 +47,12 @@ class TrainingPackageController extends Controller
     }
 
     // public function store(StorePackageRequest $requestObj)
+    /**
+     * This function is responsible for storing a new training package in the database.
+     */
     public function store(StorePackageRequest $request)
     {
-        // dd($request);
-        // Package::create([
-        //     'name' => $request->name,
-        //     'price' => $request->price,
-        //     'description' => $request->number_of_sessions,
 
-        // ]);
         $image = $request->file('image');
 
         if ($image != null) :
@@ -75,16 +78,15 @@ class TrainingPackageController extends Controller
         );
     }
 
+    /**
+     * This function is responsible for updating an existing training package in the database.
+     */
     public function update($package_id, StorePackageRequest $request)
     {
         $package = Package::findOrFail($package_id);
-//        $package->update([
-//            'price' => $request->price,
-//            'number_of_sessions' => $request->number_of_sessions,
-//        ]);
+
         $image = $request->file('image');
 
-//        dd($image);
         if ($image != null) :
             $imageName = time() . rand(1, 200) . '.' . $image->extension();
             $image->move(public_path('imgs//' . 'gym'), $imageName);
@@ -101,7 +103,9 @@ class TrainingPackageController extends Controller
             ->with('success', 'Package Updated Successfully');
     }
 
-
+    /**
+     * This function is responsible for deleting a training package from the database.
+     */
     public function destroy(Package $package)
     {
         $id = $package->id;

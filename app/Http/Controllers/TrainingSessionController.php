@@ -17,6 +17,9 @@ use Spatie\Period\PeriodCollections;
 
 class TrainingSessionController extends Controller
 {
+    /**
+     * This function is responsible for displaying a list of training sessions based on the user's role and authorization.
+     */
     public function index()
     {
 
@@ -105,6 +108,10 @@ class TrainingSessionController extends Controller
         ]);
     }
 
+    /**
+     *  This function is responsible for displaying detailed information about a specific training session,
+     *  including the list of users who attend the session based on their gender.
+     */
     public function show($sessionID)
     {
         $isWeb = auth()->guard('web')->check();
@@ -126,6 +133,9 @@ class TrainingSessionController extends Controller
 
         return view('sessions.show', ['session' => $session, 'users' => $users]);
     }
+    /**
+     * This function is responsible for recording attendance for users in a specific training session based on the provided input.
+     */
     public function attend(Request $request, $trainingSession)
     {
         $session = TrainingSession::findOrFail($trainingSession);
@@ -171,6 +181,9 @@ class TrainingSessionController extends Controller
         ]);
     }
 
+    /**
+     * This function is responsible for updating the details of a training session based on the provided $id.
+     */
     public function update($id)
     {
         $formDAta = request()->all();
@@ -187,7 +200,9 @@ class TrainingSessionController extends Controller
         }
     }
 
-
+    /**
+     * This function is responsible for deleting a training session with the provided $id.
+     */
     public function destroy($id)
     {
         $session = TrainingSession::find($id);
@@ -208,6 +223,9 @@ class TrainingSessionController extends Controller
         }
     }
 
+    /**
+     * This function is responsible for creating a new training session based on the data provided in the $request.
+     */
     public function store(TrainingSessionRequest $request)
     {
 

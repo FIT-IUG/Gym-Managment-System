@@ -5,21 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Blog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
 
 class BlogController extends Controller
 {
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
+     * This function appears to be responsible for displaying a list of blogs.
      */
     public function index()
     {
-        //
         $blogs = Blog::all();
-
         return view('blogs.index', ['blogs' => $blogs]);
     }
 
@@ -39,10 +36,7 @@ class BlogController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * This function appears to be responsible for storing a new blog post.
      */
     public function store(Request $request)
     {
@@ -54,11 +48,10 @@ class BlogController extends Controller
             'description' => 'required|string|min:15'
         ]);
         if ($validator->fails()) {
-            return response()->json(["message" => $validator->getMessageBag()->first()], Response::HTTP_BAD_REQUEST);
+            return Redirect::back()->withErrors($validator->errors());
         }
         $image = $request->file('image');
 
-//        dd($image);
         if ($image != null) :
             $imageName = time() . rand(1, 200) . '.' . $image->extension();
             $image->move(public_path('imgs//' . 'blogs'), $imageName);
@@ -78,16 +71,12 @@ class BlogController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param \App\Models\Blog $blog
-     * @return \Illuminate\Http\Response
+     * This show function is responsible for displaying a specific blog post.
      */
     public function show(Blog $blog)
     {
         //
-//        $blog = Blog::findOrFail($id);
-//        dd($blog);
+        $blog = Blog::findOrFail($blog->id);
         return view('blogs.show', ['blog' => $blog]);
     }
 
@@ -100,20 +89,15 @@ class BlogController extends Controller
     public function edit(Blog $blog)
     {
         //
-//        $blog = Blog::find($id);
+        //        $blog = Blog::find($id);
 
         return response()->view("blogs.edit", [
             'blog' => $blog,
         ]);
-
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Blog $blog
-     * @return \Illuminate\Http\Response
+     * This update function is responsible for updating an existing blog post.
      */
     public function update(Request $request, Blog $blog)
     {
@@ -125,11 +109,10 @@ class BlogController extends Controller
             'description' => 'required|string|min:15'
         ]);
         if ($validator->fails()) {
-            return response()->json(["message" => $validator->getMessageBag()->first()], Response::HTTP_BAD_REQUEST);
+            return Redirect::back()->withErrors($validator->errors());
         }
         $image = $request->file('image');
 
-//        dd($image);
         if ($image != null) :
             $imageName = time() . rand(1, 200) . '.' . $image->extension();
             $image->move(public_path('imgs//' . 'blogs'), $imageName);
@@ -138,7 +121,6 @@ class BlogController extends Controller
         endif;
 
         // handle creator
-//        $blog = Blog::findOrFail($blogId);
         $blog->title = $request->input('title');
         $blog->subTitle = $request->input('subTitle');
         $blog->description = $request->input('description');
@@ -149,15 +131,11 @@ class BlogController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param \App\Models\Blog $blog
-     * @return \Illuminate\Http\Response
+     * This destroy function is responsible for deleting a specific blog post.
      */
     public function destroy(Blog $blog)
     {
         //
-//        dd($id);
         $blog->delete();
         return to_route('blogs.index')
             ->with('success', 'blog deleted successfully');

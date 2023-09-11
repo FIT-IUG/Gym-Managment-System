@@ -77,9 +77,9 @@ class GestController extends Controller
     }
     public function myCoach()
     {
-        $user = Auth::user();
-        $attendance = User::with('attendances.trainingSessions')->find($user->id);
-        $sessions = $attendance->attendances->pluck('trainingSessions');
+        $authUser = Auth::user();
+        $user = User::with('trainingSessions')->find($authUser->id);
+        $sessions = $user->trainingSessions;
         $coaches = collect();
 
         foreach ($sessions as $session) {
@@ -89,9 +89,16 @@ class GestController extends Controller
     }
     public function session()
     {
-        $user = Auth::user();
-        $attendance = User::with('attendances.trainingSessions')->find($user->id);
-        $sessions = $attendance->attendances->pluck('trainingSessions');
+        $authUser = Auth::user();
+        $user = User::with('trainingSessions')->find($authUser->id);
+        $sessions = $user->trainingSessions;
+        foreach ($sessions as $session) {
+            $daysFromDatabase = json_decode($session->days);
+            $daysArray = explode(",", $daysFromDatabase); // تقسيم النص إلى مصفوفة
+            $daysToShow = implode(", ", $daysArray);
+            $session->days = $daysToShow;
+            //        dd($daysToShow);
+        }
         return view('gest.auth.sessions', ['sessions' => $sessions,]);
     }
     public function parchedPackage()

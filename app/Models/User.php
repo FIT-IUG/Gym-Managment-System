@@ -15,7 +15,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Cog\Laravel\Ban\Traits\Bannable;
 use Cog\Contracts\Ban\Bannable as BannableContract;
 
-class User extends Authenticatable implements MustVerifyEmail,BannableContract
+class User extends Authenticatable implements MustVerifyEmail, BannableContract
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles, Bannable;
 
@@ -66,5 +66,8 @@ class User extends Authenticatable implements MustVerifyEmail,BannableContract
     {
         return $this->hasMany(User::class, 'user_id');
     }
-
+    public function trainingSessions()
+    {
+        return $this->belongsToMany(TrainingSession::class, 'user_sessions', 'user_id', 'training_session_id');
+    }
 }

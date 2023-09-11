@@ -24,6 +24,10 @@ class TrainingSession extends Model
     {
         return $this->belongsToMany(Coach::class, 'coach_sessions', 'training_session_id', 'coach_id');
     }
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_sessions', 'training_session_id', 'user_id');
+    }
     public function attendances()
     {
         return $this->hasMany(Attendance::class, 'training_session_id');

@@ -6,8 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
@@ -48,9 +49,9 @@ class RegisterController extends Controller
      * @param array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    protected function validator(array $data)
+    protected function validateRegisterRequest(Request $request)
     {
-        return Validator::make($data, [
+        return Validator::make($request->all(), [
             'name' => 'required|string|min:3',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|max:20',
@@ -68,60 +69,58 @@ class RegisterController extends Controller
      * @param array $data
      * @return \App\Models\User
      */
-    protected function create(array $data)
+    protected function createUser(Request $request)
     {
-        if (array_key_exists("userImg", $data)) :
-            $img = $data['userImg'];
-        else :
-            $img = null;
-        endif;
+        $imageName = $this->uploadUserImage($request->file('userImg'));
 
-        if ($img != null) :
-            $imageName = time() . rand(1, 200) . '.' . $img->extension();
-            $img->move(public_path('imgs//' . 'users'), $imageName);
-        else :
-            $imageName = 'Client.png';
-        endif;
-        $user = new User([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'profile_img' => $imageName,
-            'date_of_birth' => $data['date_of_birth'],
-            'gender' => $data['gender'],
-            'description' => $data['description'],
-        ]);
-        //        save user when the admin is approving it
+        $user = new User();
+        $user->name = $request->input('name');
+        $user->email = $request->input('email');
+        $user->password = Hash::make($request->input('password'));
+        $user->profile_img = $imageName;
+        $user->date_of_birth = $request->input('date_of_birth');
+        $user->gender = $request->input('gender');
+        $user->description = $request->input('description');
         $user->save();
-        $user->ban([
-            'comment' => 'its new resister user',
-        ]);
 
-        $user->assignRole('client');
-        $saved = $user->save();
-        if ($saved) {
-            return redirect()->route('signIn');
-        } else {
-            return response()->json(
-                ['message' => $data->getMessageBag()->first()],
-                Response::HTTP_BAD_REQUEST
-            );
-        }
-//        return $user;
+        return $user;
     }
 
-
-    public function store(Request $request)
+    protected function uploadUserImage($image)
     {
-        $user = $this->create($request->all());
-
-        // Redirect the user to a page where they can see the details of the user and approve it
-        return redirect()->route('users.show', $user->id);
+        if ($image) {
+            $imageName = time() . rand(1, 200) . '.' . $image->extension();
+            $image->move(public_path('imgs//users'), $imageName);
+        } else {
+            $imageName = 'Client.png';
+        }
+        return $imageName;
     }
+
+    protected function initializeUser(User $user)
+    {
+//        $user = User::where('id', $user->email)->first();
+        $user->assignRole('client');
+        $banData = [
+            'comment' => 'مستخدم جديد',
+            'bannable_id' => $user->id,  // Pass the user's ID here
+            'bannable_type' => get_class($user),
+        ];
+
+        $user->ban($banData);
+    }
+
 
     public function register(Request $request)
     {
+        $validator = $this->validateRegisterRequest($request);
+        $user = $this->createUser($request);
+        $this->initializeUser($user);
         // Redirect the user to a page where they can see the details of the user and approve it
-        return redirect()->route('signIn');
+        if ($user->save()) {
+            return redirect()->route('signIn');
+        } else {
+            return Redirect::back()->withErrors($validator->errors());
+        }
     }
 }

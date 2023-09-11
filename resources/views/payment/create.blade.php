@@ -37,6 +37,16 @@
                             @endforeach
                         </select>
                     </div>
+                    <div class="form-group mb-3">
+                        <label>حدد الحصة التدريبية</label>
+                        <select id="selectedPackage" name="session_id" class="form-control">
+                            <option value="0" disabled selected>=== حدد الحصة التدريبية ===</option>
+                            @foreach ($sessions as $session)
+                                <option value="{{ $session->id }}">{{ $session->name }} |
+                                    {{ date('h:i a', strtotime($session->started_at)) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
                     <div class="d-flex justify-content-end">
                         <button type="submit" class="btn btn-success py-2 px-4">شراء</button>

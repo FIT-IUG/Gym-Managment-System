@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
 use App\Models\Attendance;
 use App\Models\BuyPackage;
 use App\Models\User;
@@ -10,13 +11,17 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-use Symfony\Component\HttpFoundation\Response;
 
 
 class UserController extends Controller
 {
 
+    /**
+     * This function is responsible for rendering the index view for users,
+     * considering different scenarios based on the user's role and authentication guard.
+     */
     public function index()
     {
         $isWeb = auth()->guard('web')->check();
@@ -40,9 +45,9 @@ class UserController extends Controller
                 $coach = auth('coach')->user();
                 $trainingSessions = $coach->trainingSessions;
                 $attendances = Attendance::whereIn('training_session_id', $trainingSessions->pluck('id'))->get();
-                $usersInSessions = $attendances->filter(function ($attendance) use ($gender) {
-                    return $attendance->users->gender === $gender;
-                })->pluck('users')->unique();
+                $usersInSessions = $trainingSessions->pluck('users')->collapse()->filter(function ($user) use ($gender) {
+                    return $user->gender === $gender;
+                })->unique();
                 $users = $usersInSessions;
             }
             return view('users.index', data: [
@@ -65,23 +70,30 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * This function is responsible for displaying the details of a user based on their user ID.
+     */
     public function show($userID)
     {
         $user = User::findOrFail($userID);
         return view('users.show', ['user' => $user]);
     }
 
-    // public function store(StoreUserRequest $request)
-    public function store(Request $request)
+    /**
+     * This function is responsible for handling the creation (registration) of a new user.
+     */
+    public function store(StoreUserRequest $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:3',
             'email' => 'required|unique:users|email',
-            'passwd' => 'required|min:6|max:20',
-            'confirmPassword' => 'required|same:passwd',
+            'password' => 'required|min:6|max:20',
+            'confirmPassword' => 'required|same:password',
             'date_of_birth' => 'required|date',
         ]);
-        // dd($request);
+        if ($validator->fails()) {
+            return Redirect::back()->withErrors($validator->errors());
+        }
         $img = $request->file('profile_img');
 
         if ($img != null) :
@@ -116,6 +128,9 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * This function handles the update of an existing user's information.
+     */
     public function update(Request $request, User $user)
     {
         $validator = Validator::make($request->all(), [
@@ -124,7 +139,7 @@ class UserController extends Controller
             'date_of_birth' => 'required|date',
         ]);
         if ($validator->fails()) {
-            return response()->json(["message" => $validator->getMessageBag()->first()], Response::HTTP_BAD_REQUEST);
+            return Redirect::back()->withErrors($validator->errors());
         }
         $user->name = $request->input('name');
         $user->email = $request->input('email');
@@ -134,6 +149,9 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
+    /**
+     * This function is responsible for deleting a user's account.
+     */
     public function destroy($userId)
     {
         $checkAttendance = Attendance::where('user_id', $userId)->first();
@@ -164,9 +182,11 @@ class UserController extends Controller
         return view('profile.editProfile');
     }
 
+    /**
+     * This function handles the update of a user's profile information.
+     */
     public function updateProfile(Request $request)
     {
-        //        dd($request);
         $userID = $request->id;
 
         $validated = $request->validate([
@@ -176,7 +196,6 @@ class UserController extends Controller
         ]);
 
         $oldimg = $request->oldimg;
-        //        dd($request);
 
         if ($request->hasFile('profile_img')) {
             $request->validate([
@@ -185,7 +204,6 @@ class UserController extends Controller
 
             $imageName = time() . '.' . $request->file('profile_img')->extension();
             $request->file('profile_img')->move(public_path('imgs//' . 'users'), $imageName);
-            //            dd($imageName);
             DB::table('users')->where('id', '=', $userID)->update(['profile_img' => $imageName]);
 
             if ($oldimg != "Client.png") {
@@ -211,10 +229,12 @@ class UserController extends Controller
         return view('profile.editPassword', ["msg" => $msg]);
     }
 
+    /**
+     * This function handles the process of updating a user's password.
+     */
     public function updatePassword(Request $request)
     {
         $userid = Auth::id();
-        //        dd($userid);
 
         $data = $request->validate([
             'newpassword' => 'required|min:6',
@@ -236,6 +256,9 @@ class UserController extends Controller
     }
 
 
+    /**
+     *  This function is responsible for banning a user.
+     */
     public function ban($user)
     {
         User::findOrFail($user)->ban([
@@ -247,6 +270,9 @@ class UserController extends Controller
         return redirect()->route('users.index');
     }
 
+    /**
+     * This function is responsible for unbanning a user.
+     */
     public function unban($user)
     {
         User::findOrFail($user)->unban();

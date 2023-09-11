@@ -5,16 +5,21 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTrainingSessionRequest;
 use App\Http\Requests\TrainingSessionRequest;
 use App\Models\Attendance;
+use App\Models\Attendee;
 use App\Models\Coach;
 use App\Models\CoachSession;
 use App\Models\TrainingSession;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Spatie\Period\PeriodCollections;
 
 class TrainingSessionController extends Controller
 {
+    /**
+     * This function is responsible for displaying a list of training sessions based on the user's role and authorization.
+     */
     public function index()
     {
 
@@ -43,19 +48,15 @@ class TrainingSessionController extends Controller
                 foreach ($sessions as $session) {
                     $coaches = $coaches->merge($session->coaches);
                 }
-//                dd($coaches);
-//                $coaches = Auth::user()->coaches;
                 return view('sessions.index', [
                     'sessions' => $sessions,
                     'coaches' => $coaches
                 ]);
             }
-//        dd($trainingSessions);
             return view('sessions.index', [
                 'sessions' => $sessions,
                 'coaches' => $coaches
             ]);
-
         } else {
             $isCoach = auth()->guard('coach')->check();
             $roleCoach = auth('coach')->user()->hasRole('coach');
@@ -66,7 +67,6 @@ class TrainingSessionController extends Controller
                 return view('sessions.index', [
                     'sessions' => $sessions,
                 ]);
-
             }
         }
     }
@@ -93,13 +93,13 @@ class TrainingSessionController extends Controller
             $coaches = Coach::all();
         }
 
-//        if ($roleAdmin) {
-//            $sessions = TrainingSession::all();
-//            $coaches = Coach::all();
-//        } elseif ($roleClient) {
-//            $sessions = Auth::user()->trainingSessions;
-//            $coaches = Auth::user()->coaches;
-//        }
+        //        if ($roleAdmin) {
+        //            $sessions = TrainingSession::all();
+        //            $coaches = Coach::all();
+        //        } elseif ($roleClient) {
+        //            $sessions = Auth::user()->trainingSessions;
+        //            $coaches = Auth::user()->coaches;
+        //        }
 
 
         return view('sessions.create', [
@@ -108,16 +108,61 @@ class TrainingSessionController extends Controller
         ]);
     }
 
+    /**
+     *  This function is responsible for displaying detailed information about a specific training session,
+     *  including the list of users who attend the session based on their gender.
+     */
     public function show($sessionID)
     {
+        $isWeb = auth()->guard('web')->check();
+        $isCoach = auth()->guard('coach')->check();
+        if ($isWeb) {
+            $gender = auth()->user()->gender;
+        } else {
+            $gender = auth('coach')->user()->gender;
+        }
         $session = TrainingSession::findOrFail($sessionID);
-        return view('sessions.show', ['session' => $session]);
+        $users = $session->users->filter(function ($user) use ($gender) {
+            return $user->gender === $gender;
+        });
+
+        $daysFromDatabase = json_decode($session->days);
+        $daysArray = explode(",", $daysFromDatabase); // تقسيم النص إلى مصفوفة
+        $daysToShow = implode(", ", $daysArray);
+        $session->days = $daysToShow;
+
+        return view('sessions.show', ['session' => $session, 'users' => $users]);
     }
+    /**
+     * This function is responsible for recording attendance for users in a specific training session based on the provided input.
+     */
+    public function attend(Request $request, $trainingSession)
+    {
+        $session = TrainingSession::findOrFail($trainingSession);
+
+        foreach ($request->input('users') as $userId => $days) {
+            foreach ($days as $day => $isChecked) {
+                if ($isChecked === 'on') {
+                    Attendee::where('user_id', $userId)->decrement('remaining_sessions');
+                    $attendance = new Attendance();
+                    $attendance->attendance_date = now();
+                    $attendance->attendance_time = now();
+                    $attendance->user_id = $userId;
+                    $attendance->training_session_id = $session->id;
+                    $attendance->save();
+                    $user = User::find($userId);
+                    $user->attendances()->save($attendance);
+                }
+            }
+        }
+        return redirect()->route('sessions.index');
+    }
+
 
     public function edit($id)
     {
         $session = TrainingSession::find($id);
-//        $coaches = Coach::all();
+        //        $coaches = Coach::all();
         $roleAdmin = auth()->user()->hasRole('admin');
         $gender = auth()->user()->gender;
 
@@ -136,6 +181,9 @@ class TrainingSessionController extends Controller
         ]);
     }
 
+    /**
+     * This function is responsible for updating the details of a training session based on the provided $id.
+     */
     public function update($id)
     {
         $formDAta = request()->all();
@@ -152,7 +200,9 @@ class TrainingSessionController extends Controller
         }
     }
 
-
+    /**
+     * This function is responsible for deleting a training session with the provided $id.
+     */
     public function destroy($id)
     {
         $session = TrainingSession::find($id);
@@ -173,6 +223,9 @@ class TrainingSessionController extends Controller
         }
     }
 
+    /**
+     * This function is responsible for creating a new training session based on the data provided in the $request.
+     */
     public function store(TrainingSessionRequest $request)
     {
 
@@ -180,8 +233,7 @@ class TrainingSessionController extends Controller
         $end = $request['finished_at'];
         $end = $request['finished_at'];
         $selectedDays = implode(',', $request->input('day'));
-//        dd($selectedDays);
-//        $coach = $request->coach_id;
+
 
         if ($request->has('coach_id')) {
 
@@ -201,9 +253,7 @@ class TrainingSessionController extends Controller
             }
             return redirect()->route('sessions.index');
         } else {
-            // return back()->with('error', 'Session date will Overlap another session, Choose different Date');
-            return Redirect::back()->withErrors(['msg' => 'time overlap ,choose another time']);
+            return Redirect::back()->withErrors(['msg' => 'حدث خطأ في إضافة حصة التدريبية']);
         }
     }
-
 }

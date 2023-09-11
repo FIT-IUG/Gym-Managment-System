@@ -105,6 +105,7 @@ Route::group(['middleware' => 'auth:web|coach', 'middleware' => 'role:admin|coac
     Route::GET('/sessions', [TrainingSessionController::class, 'index'])->name('sessions.index');
     Route::GET('/sessions/create', [TrainingSessionController::class, 'create'])->name('sessions.create');
     Route::GET('/sessions/{id}', [TrainingSessionController::class, 'show'])->name('sessions.show');
+    Route::POST('/sessions/attend/{session}', [TrainingSessionController::class, 'attend'])->name('session.attend');
     Route::POST('/sessions', [TrainingSessionController::class, 'store'])->name('sessions.store');
     Route::GET('/sessions/{id}/edit', [TrainingSessionController::class, 'edit'])->name('sessions.edit');
     Route::PUT('/sessions/{id}', [TrainingSessionController::class, 'update'])->name('sessions.update');

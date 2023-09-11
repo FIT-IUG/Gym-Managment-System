@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
-
+    /**
+     * This function appears to be responsible for displaying attendance records based on the user's role and gender.
+     */
     public function index()
     {
 

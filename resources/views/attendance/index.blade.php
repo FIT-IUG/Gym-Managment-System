@@ -6,7 +6,7 @@
         <div class="col-md-12 px-4">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">جميع المشتريات</h3>
+                    <h3 class="card-title">سجل الحضور</h3>
                 </div>
                 <div class="card-body">
                     <table id="table" class="table text-center table-hover">
@@ -26,9 +26,9 @@
                                     <td>{{ $attendance->users->email }}</td>
                                     <td>{{ $attendance->trainingSessions ? $attendance->trainingSessions->name : 'Not Found !' }}
                                     </td>
-                                    <td>{{ $attendance->trainingSessions ? date('Y-m-d h:i a', strtotime($attendance->trainingSessions->started_at)) : 'Not Found !' }}
+                                    <td>{{ $attendance->trainingSessions ? date('h:i a', strtotime($attendance->trainingSessions->started_at)) : 'Not Found !' }}
                                     </td>
-                                    <td>{{ $attendance->trainingSessions ? date('Y-m-d h:i a', strtotime($attendance->trainingSessions->finished_at)) : 'Not Found !' }}
+                                    <td>{{ $attendance->trainingSessions ? date('h:i a', strtotime($attendance->trainingSessions->finished_at)) : 'Not Found !' }}
                                     </td>
                                 </tr>
                             @endforeach
